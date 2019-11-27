@@ -23,9 +23,11 @@
   },
   "dependencies": {},
   "peerDependencies": {
-    "prop-types": "^15.5.4",
-    "react": "^15.0.0 || ^16.0.0",
-    "react-dom": "^15.0.0 || ^16.0.0"
+    "antd": "^3.25.0",
+    "react": "^16.4.1",
+    "lodash": "^4.17.15",
+    "react-dom": "^16.4.1",
+    "styled-components": "^4.4.1"
   },
   "devDependencies": {
     "@svgr/rollup": "^2.4.1",
@@ -36,6 +38,7 @@
     "babel-runtime": "^6.26.0",
     "cross-env": "^5.1.4",
     "gh-pages": "^1.2.0",
+    "lodash": "^4.17.15",
     "react": "^16.4.1",
     "react-dom": "^16.4.1",
     "react-scripts-ts": "^2.16.0",
