@@ -1,4 +1,4 @@
-import SingleDatePicker from "./SingleDatePicker";
+import SingleDatePicker from "./HooksSingleDatePicker";
 
 import { PickerValue } from "./typeing";
 

@@ -1,3 +1,3 @@
-import RangePicker from "./RangePicker";
+import RangePicker from "./HooksRangePicker";
 
 export default RangePicker;
