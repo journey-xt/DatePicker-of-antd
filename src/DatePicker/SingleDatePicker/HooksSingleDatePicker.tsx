@@ -1,4 +1,4 @@
-import React, { useCallback, useState, useEffect } from "react";
+import React, { useCallback, useState, useEffect, useMemo } from "react";
 import styled from "styled-components";
 import { DatePicker } from "antd";
 import moment from "moment";
@@ -33,7 +33,10 @@ export interface SingleDatePickerProps {
   value?: string | number | Moment | Date;
 }
 
-const SingleDatePicker = (props: SingleDatePickerProps, ref) => {
+const SingleDatePicker = (
+  props: SingleDatePickerProps,
+  ref: React.Ref<any>
+) => {
   const {
     // format = "YYYY-MM-DD",
     valueStatus = ValueStatus.Start,
@@ -59,7 +62,7 @@ const SingleDatePicker = (props: SingleDatePickerProps, ref) => {
             return onChange(dateString, valueStatus);
           case ValueType.Moment:
           default:
-            return onChange(date, valueStatus);
+            return onChange(date || undefined, valueStatus);
         }
       } else {
         setDateValue(transformMoment(value));
@@ -93,8 +96,9 @@ const SingleDatePicker = (props: SingleDatePickerProps, ref) => {
     [value]
   );
 
-  if (!ref) {
-    ref.current = () => {};
+  if (ref) {
+    ref = useMemo(() => ({ current: () => {} }), []);
+    //  ref.current = () => {};
   }
 
   return (
@@ -109,4 +113,4 @@ const SingleDatePicker = (props: SingleDatePickerProps, ref) => {
   );
 };
 
-export default React.forwardRef(SingleDatePicker);
+export default React.forwardRef<any, SingleDatePickerProps>(SingleDatePicker);

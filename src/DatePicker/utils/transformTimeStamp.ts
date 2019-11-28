@@ -7,6 +7,9 @@ const transformTimeStamp = (
   date: monent.Moment | null,
   valueStatus?: ValueStatus
 ): number | undefined => {
+  if (!date) {
+    return undefined;
+  }
   switch (valueStatus) {
     case ValueStatus.Start:
       return date ? date.startOf("day").valueOf() : undefined;
