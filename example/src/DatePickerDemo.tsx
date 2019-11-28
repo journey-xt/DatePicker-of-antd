@@ -20,6 +20,7 @@ class DatePickerDemo extends PureComponent<Props, State> {
 
     return (
       <Layout style={{ padding: 20 }}>
+        <SingleDatePicker />
         <Form>
           <Row gutter={24}>
             <Col span={8}>

@@ -96,10 +96,10 @@ const SingleDatePicker = (
     [value]
   );
 
-  if (ref) {
-    ref = useMemo(() => ({ current: () => {} }), []);
-    //  ref.current = () => {};
-  }
+  // if (ref) {
+  //   ref = useMemo(() => ({ current: () => {} }), []);
+  //   //  ref.current = () => {};
+  // }
 
   return (
     <PackDataPick

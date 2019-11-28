@@ -25,8 +25,8 @@
   "peerDependencies": {
     "antd": "^3.25.0",
     "lodash": "^4.17.15",
-    "react": "^16.5.2",
-    "react-dom": "^16.5.2",
+    "react": "^16.8.0",
+    "react-dom": "^16.8.0",
     "styled-components": "^4.4.1"
   },
   "devDependencies": {
@@ -42,8 +42,8 @@
     "cross-env": "^5.1.4",
     "gh-pages": "^1.2.0",
     "lodash": "^4.17.15",
-    "react": "16.5.2",
-    "react-dom": "16.5.2",
+    "react": "16.8.0",
+    "react-dom": "16.8.0",
     "react-scripts-ts": "^2.16.0",
     "rollup": "^0.62.0",
     "rollup-plugin-babel": "^3.0.7",
@@ -54,7 +54,7 @@
     "rollup-plugin-typescript2": "^0.17.0",
     "rollup-plugin-url": "^1.4.0",
     "styled-components": "^4.4.1",
-    "typescript": "^2.8.3"
+    "typescript": "^3.7.2"
   },
   "files": [
     "dist"
