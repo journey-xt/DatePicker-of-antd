@@ -1,7 +1,9 @@
 import React, { PureComponent } from "react";
 import { Form, Layout, Row, Col } from "antd";
 import { FormComponentProps } from "antd/lib/form";
-import SingleDatePicker, { RangePicker } from "datepicker-of-antd";
+import SingleDatePicker from "datepicker-of-antd";
+// import "antd/es/date-picker/style/index.css";
+import "antd/dist/antd.css";
 
 interface Props extends FormComponentProps {}
 
@@ -20,7 +22,6 @@ class DatePickerDemo extends PureComponent<Props, State> {
 
     return (
       <Layout style={{ padding: 20 }}>
-        <SingleDatePicker />
         <Form>
           <Row gutter={24}>
             <Col span={8}>
