@@ -1,4 +1,5 @@
 {
+  "presets": ["react-app"],
   "plugins": [
     [
       "import",
