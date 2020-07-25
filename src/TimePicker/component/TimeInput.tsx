@@ -2,7 +2,7 @@ import React, { PureComponent, RefObject } from "react";
 import styled from "styled-components";
 import { Input, Popover } from "antd";
 import PopoverRender from "./PopoverRender";
-import { HOUR, MINUTE, SEC } from "../../constant";
+import { HOUR, MINUTE, SEC } from "../../DatePicker/constant";
 import { fillTen } from "../../utils";
 
 const InputWarp = styled.div`

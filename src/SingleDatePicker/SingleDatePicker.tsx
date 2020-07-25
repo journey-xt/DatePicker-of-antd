@@ -1,27 +1,49 @@
 import React, { useCallback, useState, useEffect, useMemo } from "react";
-import styled from "styled-components";
+import styled, { css } from "styled-components";
 import { DatePicker } from "antd";
+import {} from "antd/lib/date-picker/";
 import moment from "moment";
 import "moment/locale/zh-cn";
 import { transformMoment, transformTimeStamp } from "../utils";
 
 // 声明文件
-import { Moment } from "moment/moment.d";
+import { Moment } from "moment/moment";
 import { PickerValue } from "./typeing";
 import { ValueType, ValueStatus } from "./enum";
 
 moment.locale("zh-cn");
 
-const PackDataPick = styled(DatePicker)`
+const afterCss = css`
+  content: "~";
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: absolute;
+  right: -24px;
+  top: 0;
+  height: 100%;
+  width: 24px;
+  background: #fff;
+`;
+
+const PackDataPick = styled(DatePicker)<{ showElement?: boolean }>`
+  position: relative;
   width: 100%;
+  & .ant-input {
+    border: 1px solid transparent;
+  }
+  &:after {
+    ${props => (props.showElement ? afterCss : "")}
+  }
 `;
 
 // 声明组件Props类型
 export interface SingleDatePickerProps {
   format?: string | string[];
-  selectTodayAfter?: boolean;
+  todayAfter?: boolean;
   showTime?: boolean;
   valueStatus?: ValueStatus;
+  value?: string | number | Moment | Date;
   disabledDate?: (
     currentDate: Moment | undefined,
     valueStatus?: ValueStatus
@@ -30,7 +52,8 @@ export interface SingleDatePickerProps {
   onChange?: (value?: PickerValue, valueStatus?: ValueStatus) => void;
   defaultPickerValue?: Moment;
   showToday?: boolean;
-  value?: string | number | Moment | Date;
+  suffixIcon?: React.ReactNode | null;
+  showElement?: boolean;
 }
 
 const SingleDatePicker = (
@@ -43,10 +66,10 @@ const SingleDatePicker = (
     valueType = ValueType.TimeStamp,
     value,
     onChange,
-    showToday,
     defaultPickerValue,
     disabledDate,
-    selectTodayAfter,
+    todayAfter,
+    ...reset
   } = props;
 
   const [dateValue, setDateValue] = useState(transformMoment(value));
@@ -78,7 +101,7 @@ const SingleDatePicker = (
       if (disabledDate && currentDate) {
         return disabledDate(currentDate, valueStatus);
       }
-      if (selectTodayAfter) {
+      if (todayAfter) {
         if (currentDate) {
           return currentDate.isBefore(dateValue, "day");
         }
@@ -86,7 +109,7 @@ const SingleDatePicker = (
       }
       return false;
     },
-    [disabledDate, selectTodayAfter, dateValue, valueStatus]
+    [disabledDate, todayAfter, dateValue, valueStatus]
   );
 
   useEffect(
@@ -96,18 +119,13 @@ const SingleDatePicker = (
     [value]
   );
 
-  if (!ref) {
-    ref = useMemo(() => ({ current: () => {} }), []);
-  }
-
   return (
     <PackDataPick
+      {...reset}
       value={dateValue}
       onChange={dateChange}
       disabledDate={disabledTime}
       defaultPickerValue={defaultPickerValue}
-      showToday={showToday}
-      //  renderExtraFooter={this.renderExtraFooter}
     />
   );
 };

@@ -3,7 +3,7 @@ import styled from "styled-components";
 import { Row, Col } from "antd";
 import moment from "moment";
 // 声明文件
-import { Moment } from "moment/moment.d";
+import { Moment } from "moment/moment";
 import { RangePickerValue } from "./typeing";
 // 组件引用
 import SingleDatePicker, {
@@ -12,19 +12,34 @@ import SingleDatePicker, {
   PickerValue,
 } from "../SingleDatePicker";
 
-const LayoutCol = styled(Col)`
+const LayoutLeftCol = styled(Col)`
   position: relative;
+  padding-right: 24px !important;
 `;
 
-const LayoutDiv = styled.div`
-  position: absolute;
-  left: 50%;
+const LayoutRightCol = styled(Col)`
+  position: relative;
+  padding-left: 0 !important;
 `;
 
-const RelationSpan = styled.div`
-  position: relative;
-  right: 50%;
-`;
+// const LayoutDiv = styled.div`
+//   position: absolute;
+//   left: 50%;
+//   top: 0;
+//   bottom: 0;
+// `;
+
+// const RelationSpan = styled.div`
+//   position: relative;
+//   display: table;
+//   height: 100%;
+//   right: 50%;
+//   &:after {
+//     content: "~";
+//     display: table-cell;
+//     vertical-align: middle;
+//   }
+// `;
 
 // 声明组件Props类型
 interface Props {
@@ -127,25 +142,27 @@ const RangePicker = (props: Props) => {
 
   return (
     <Row gutter={24}>
-      <LayoutCol span={12}>
+      <LayoutLeftCol span={12}>
         <SingleDatePicker
+          showElement
           value={RangeValue[ValueStatus.Start]}
           valueStatus={ValueStatus.Start}
           disabledDate={rangeDisabledDate}
           onChange={rangeChange}
           showToday={showToday}
           valueType={ValueType.TimeStamp}
+          suffixIcon
           defaultPickerValue={
             RangeValue[ValueStatus.Start]
               ? moment(RangeValue[ValueStatus.Start])
               : undefined
           }
         />
-      </LayoutCol>
-      <LayoutDiv>
-        <RelationSpan>~</RelationSpan>
-      </LayoutDiv>
-      <Col span={12}>
+      </LayoutLeftCol>
+      {/* <LayoutDiv>
+        <RelationSpan />
+      </LayoutDiv> */}
+      <LayoutRightCol span={12}>
         <SingleDatePicker
           value={RangeValue[ValueStatus.End]}
           valueStatus={ValueStatus.End}
@@ -159,7 +176,7 @@ const RangePicker = (props: Props) => {
               : undefined
           }
         />
-      </Col>
+      </LayoutRightCol>
     </Row>
   );
 };

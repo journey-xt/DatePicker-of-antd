@@ -1,7 +1,7 @@
 import React, { PureComponent } from "react";
 import { Form, Layout, Row, Col } from "antd";
 import { FormComponentProps } from "antd/lib/form";
-import SingleDatePicker from "datepicker-of-antd";
+import SingleDatePicker, { RangePicker } from "datepicker-of-antd";
 // import "antd/es/date-picker/style/index.css";
 import "antd/dist/antd.css";
 
@@ -24,9 +24,21 @@ class DatePickerDemo extends PureComponent<Props, State> {
       <Layout style={{ padding: 20 }}>
         <Form>
           <Row gutter={24}>
-            <Col span={8}>
+            <Col span={6}>
               <Form.Item label="单个时间">
                 {getFieldDecorator("singleDate")(<SingleDatePicker />)}
+              </Form.Item>
+            </Col>
+            <Col span={6}>
+              <Form.Item label="单个时间">
+                {getFieldDecorator("singleDate1")(
+                  <SingleDatePicker todayAfter suffixIcon />
+                )}
+              </Form.Item>
+            </Col>
+            <Col span={6}>
+              <Form.Item label="联级时间">
+                {getFieldDecorator("rangeDate")(<RangePicker />)}
               </Form.Item>
             </Col>
             {/* <Col span={8}>
@@ -39,11 +51,7 @@ class DatePickerDemo extends PureComponent<Props, State> {
                 )}
               </Form.Item>
             </Col>
-            <Col span={8}>
-              <Form.Item label="联级时间">
-                {getFieldDecorator("rangeDate")(<RangePicker />)}
-              </Form.Item>
-            </Col>
+            
             <Col span={8}>
               <Form.Item label="联级时间">
                 {getFieldDecorator("rangeDateTime")(
