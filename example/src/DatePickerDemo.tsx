@@ -18,7 +18,7 @@ class DatePickerDemo extends PureComponent<Props, State> {
   render() {
     const { form } = this.props;
 
-    const { getFieldDecorator } = form;
+    const { getFieldDecorator, getFieldValue } = form;
 
     return (
       <Layout style={{ padding: 20 }}>
@@ -28,6 +28,7 @@ class DatePickerDemo extends PureComponent<Props, State> {
               <Form.Item label="单个时间">
                 {getFieldDecorator("singleDate")(<SingleDatePicker />)}
               </Form.Item>
+              {JSON.stringify(getFieldValue("singleDate"))}
             </Col>
             <Col span={6}>
               <Form.Item label="单个时间">
@@ -35,11 +36,13 @@ class DatePickerDemo extends PureComponent<Props, State> {
                   <SingleDatePicker todayAfter suffixIcon />
                 )}
               </Form.Item>
+              {JSON.stringify(getFieldValue("singleDate1"))}
             </Col>
             <Col span={6}>
               <Form.Item label="联级时间">
                 {getFieldDecorator("rangeDate")(<RangePicker />)}
               </Form.Item>
+              {JSON.stringify(getFieldValue("rangeDate"))}
             </Col>
             {/* <Col span={8}>
               <Form.Item label="单个时间(带时间)">
