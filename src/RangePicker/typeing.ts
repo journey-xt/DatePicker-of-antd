@@ -1,5 +1,5 @@
-import { ValueType, ValueStatus } from "../DatePicker/SingleDatePicker/enum";
-import { PickerValue } from "../DatePicker/SingleDatePicker/typeing";
+import { ValueType, ValueStatus } from "../SingleDatePicker/enum";
+import { PickerValue } from "../SingleDatePicker/typeing";
 
 export interface RangePickerValue {
   [ValueStatus.Start]: PickerValue | undefined;

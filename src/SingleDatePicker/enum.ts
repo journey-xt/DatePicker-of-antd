@@ -9,27 +9,25 @@ export enum ValueStatus {
   End = "end", // 结束时间
 }
 
-/**
- * 选择模式
- */
+// 选择模式
 export enum SelectMode {
   /**
-   * 选择今天之前 包含今天
+   * 今天 及 以后
    */
-  BEFORETODAY = "before_today",
+  TODYANDAFTER = "todyAndAfter",
 
   /**
-   * 选择今天之前 不包含今天
+   * 以后
    */
-  BEFORECURRENT = "before_current",
+  AFTER = "after",
 
   /**
-   * 选择今天之后 包含今天
+   * 以前 及 今天
    */
-  AFTERTODAY = "after_today",
+  BREFOREANDTODAY = "breforeAndToday",
 
   /**
-   * 选择今天之后 不包含今天
+   * 以前
    */
-  AFTERCURRENT = "after_current",
+  BREFORE = "brefore",
 }

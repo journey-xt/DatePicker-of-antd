@@ -10,6 +10,7 @@ import SingleDatePicker, {
   ValueStatus,
   ValueType,
   PickerValue,
+  SelectMode,
 } from "../SingleDatePicker";
 
 const LayoutLeftCol = styled(Col)`
@@ -28,13 +29,13 @@ interface Props {
     currentDate: Moment | undefined,
     valueStatus?: ValueStatus
   ) => boolean;
-  selectTodayAfter?: boolean;
   valueStatus?: ValueStatus;
   format?: string | string[];
   valueType?: ValueType;
-  onChange?: (value: RangePickerValue) => void;
+  onChange?: (value?: RangePickerValue) => void;
   showToday?: boolean;
   value?: RangePickerValue;
+  selectMode?: SelectMode;
 }
 
 const RangePicker = (props: Props, ref: React.Ref<any>) => {
@@ -42,8 +43,8 @@ const RangePicker = (props: Props, ref: React.Ref<any>) => {
     showToday,
     onChange,
     value,
-    selectTodayAfter,
     disabledDate,
+    selectMode,
     ...reset
   } = props;
 
@@ -56,15 +57,36 @@ const RangePicker = (props: Props, ref: React.Ref<any>) => {
   const rangeChange = useCallback(
     (value?: PickerValue, valueStatus?: ValueStatus) => {
       if (onChange) {
-        onChange({
-          ...RangeValue,
-          ...(valueStatus ? { [valueStatus]: value } : {}),
-        });
+        onChange(
+          value ||
+            RangeValue[
+              valueStatus === ValueStatus.Start
+                ? ValueStatus.End
+                : ValueStatus.Start
+            ]
+            ? {
+                ...RangeValue,
+                ...(valueStatus ? { [valueStatus]: value } : {}),
+              }
+            : undefined
+        );
       } else {
-        setRangeValue({
-          ...RangeValue,
-          ...(valueStatus ? { [valueStatus]: value } : {}),
-        });
+        setRangeValue(
+          value ||
+            RangeValue[
+              valueStatus === ValueStatus.Start
+                ? ValueStatus.End
+                : ValueStatus.Start
+            ]
+            ? {
+                ...RangeValue,
+                ...(valueStatus ? { [valueStatus]: value } : {}),
+              }
+            : {
+                [ValueStatus.Start]: undefined,
+                [ValueStatus.End]: undefined,
+              }
+        );
       }
     },
     [onChange, RangeValue]
@@ -81,34 +103,59 @@ const RangePicker = (props: Props, ref: React.Ref<any>) => {
       const startTime = RangeValue[ValueStatus.Start];
       const endTime = RangeValue[ValueStatus.End];
 
+      if (!currentDate) {
+        return true;
+      }
+
       switch (valueStatus) {
         case ValueStatus.Start:
-          if (selectTodayAfter) {
-            if (currentDate && !endTime) {
-              return currentDate.isBefore(moment());
-            }
-            if (currentDate && endTime) {
-              return (
-                currentDate.isBefore(moment()) || currentDate.isAfter(endTime)
-              );
-            }
-            return false;
+          switch (selectMode) {
+            case SelectMode.BREFORE:
+              return !currentDate.isBefore(moment(), "day") || endTime
+                ? !currentDate.isBefore(endTime)
+                : !currentDate.isBefore(moment(), "day");
+            case SelectMode.BREFOREANDTODAY:
+              return currentDate.isAfter(moment()) || endTime
+                ? currentDate.isAfter(endTime)
+                : currentDate.isAfter(moment());
+            case SelectMode.AFTER:
+              return currentDate.isBefore(moment()) || endTime
+                ? currentDate.isBefore(endTime)
+                : false;
+            case SelectMode.TODYANDAFTER:
+              return currentDate.isBefore(moment(), "day") || endTime
+                ? currentDate.isBefore(endTime)
+                : false;
+            default:
+              return false;
           }
-          return false;
         case ValueStatus.End:
-          if (selectTodayAfter) {
-            if (currentDate && !startTime) {
-              return currentDate.isBefore(moment());
-            }
-            if (currentDate && startTime) {
-              return currentDate.isBefore(startTime);
-            }
-            return false;
+          switch (selectMode) {
+            case SelectMode.BREFORE:
+              const brefore = !currentDate.isBefore(moment(), "day");
+              return startTime
+                ? brefore || currentDate.isBefore(startTime)
+                : brefore;
+            case SelectMode.BREFOREANDTODAY:
+              const breforeAndToday = !currentDate.isBefore(moment());
+              return startTime
+                ? breforeAndToday || currentDate.isBefore(startTime)
+                : breforeAndToday;
+            case SelectMode.AFTER:
+              const after = currentDate.isBefore(moment());
+              return startTime
+                ? after || currentDate.isBefore(startTime)
+                : after;
+            case SelectMode.TODYANDAFTER:
+              return currentDate.isAfter(moment()) && startTime
+                ? currentDate.isBefore(startTime)
+                : false;
+            default:
+              return false;
           }
-          return false;
         default:
+          return false;
       }
-      return true;
     },
     [RangeValue, disabledDate]
   );

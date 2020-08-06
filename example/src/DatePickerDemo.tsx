@@ -1,7 +1,7 @@
 import React, { PureComponent } from "react";
 import { Form, Layout, Row, Col } from "antd";
 import { FormComponentProps } from "antd/lib/form";
-import SingleDatePicker, { RangePicker } from "datepicker-of-antd";
+import SingleDatePicker, { RangePicker, SelectMode } from "datepicker-of-antd";
 // import "antd/es/date-picker/style/index.css";
 import "antd/dist/antd.css";
 
@@ -31,18 +31,83 @@ class DatePickerDemo extends PureComponent<Props, State> {
               {JSON.stringify(getFieldValue("singleDate"))}
             </Col>
             <Col span={6}>
-              <Form.Item label="单个时间">
+              <Form.Item label="单个时间(选择今天及以后)">
                 {getFieldDecorator("singleDate1")(
-                  <SingleDatePicker todayAfter suffixIcon />
+                  <SingleDatePicker
+                    selectMode={SelectMode.TODYANDAFTER}
+                    suffixIcon
+                  />
                 )}
               </Form.Item>
               {JSON.stringify(getFieldValue("singleDate1"))}
+            </Col>
+            <Col span={6}>
+              <Form.Item label="单个时间(选择以后)">
+                {getFieldDecorator("singleDate2")(
+                  <SingleDatePicker selectMode={SelectMode.AFTER} suffixIcon />
+                )}
+              </Form.Item>
+              {JSON.stringify(getFieldValue("singleDate2"))}
+            </Col>
+            <Col span={6}>
+              <Form.Item label="单个时间(选择之前)">
+                {getFieldDecorator("singleDate3")(
+                  <SingleDatePicker
+                    selectMode={SelectMode.BREFORE}
+                    suffixIcon
+                  />
+                )}
+              </Form.Item>
+              {JSON.stringify(getFieldValue("singleDate3"))}
+            </Col>
+            <Col span={6}>
+              <Form.Item label="单个时间(选择之前及今天)">
+                {getFieldDecorator("singleDate4")(
+                  <SingleDatePicker
+                    selectMode={SelectMode.BREFOREANDTODAY}
+                    suffixIcon
+                  />
+                )}
+              </Form.Item>
+              {JSON.stringify(getFieldValue("singleDate4"))}
             </Col>
             <Col span={6}>
               <Form.Item label="联级时间">
                 {getFieldDecorator("rangeDate")(<RangePicker />)}
               </Form.Item>
               {JSON.stringify(getFieldValue("rangeDate"))}
+            </Col>
+            <Col span={6}>
+              <Form.Item label="联级时间(选择今天及以后)">
+                {getFieldDecorator("rangeDate1")(
+                  <RangePicker selectMode={SelectMode.TODYANDAFTER} />
+                )}
+              </Form.Item>
+              {JSON.stringify(getFieldValue("rangeDate1"))}
+            </Col>
+            <Col span={6}>
+              <Form.Item label="联级时间(选择以后)">
+                {getFieldDecorator("rangeDate2")(
+                  <RangePicker selectMode={SelectMode.AFTER} />
+                )}
+              </Form.Item>
+              {JSON.stringify(getFieldValue("rangeDate2"))}
+            </Col>
+            <Col span={6}>
+              <Form.Item label="联级时间(选择之前)">
+                {getFieldDecorator("rangeDate3")(
+                  <RangePicker selectMode={SelectMode.BREFORE} />
+                )}
+              </Form.Item>
+              {JSON.stringify(getFieldValue("rangeDate3"))}
+            </Col>
+            <Col span={6}>
+              <Form.Item label="联级时间(选择之前及今天)">
+                {getFieldDecorator("rangeDate4")(
+                  <RangePicker selectMode={SelectMode.BREFOREANDTODAY} />
+                )}
+              </Form.Item>
+              {JSON.stringify(getFieldValue("rangeDate4"))}
             </Col>
             {/* <Col span={8}>
               <Form.Item label="单个时间(带时间)">

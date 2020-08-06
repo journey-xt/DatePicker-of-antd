@@ -9,7 +9,7 @@ import { transformMoment, transformTimeStamp } from "../utils";
 // 声明文件
 import { Moment } from "moment/moment";
 import { PickerValue } from "./typeing";
-import { ValueType, ValueStatus } from "./enum";
+import { ValueType, ValueStatus, SelectMode } from "./enum";
 
 moment.locale("zh-cn");
 
@@ -40,8 +40,7 @@ const PackDataPick = styled(DatePicker)<{ showElement?: boolean }>`
 // 声明组件Props类型
 export interface SingleDatePickerProps {
   format?: string | string[];
-  todayAfter?: boolean;
-  showTime?: boolean;
+  //  showTime?: boolean;
   valueStatus?: ValueStatus;
   value?: string | number | Moment | Date;
   disabledDate?: (
@@ -54,6 +53,7 @@ export interface SingleDatePickerProps {
   showToday?: boolean;
   suffixIcon?: React.ReactNode | null;
   showElement?: boolean;
+  selectMode?: SelectMode;
 }
 
 const SingleDatePicker = (
@@ -68,11 +68,14 @@ const SingleDatePicker = (
     onChange,
     defaultPickerValue,
     disabledDate,
-    todayAfter,
+    selectMode,
     ...reset
   } = props;
 
   const [dateValue, setDateValue] = useState(transformMoment(value));
+
+  // 当前时间
+  const [currentMoment, SetCurrentMoment] = useState(moment());
 
   // 变化回调
   const dateChange = useCallback(
@@ -101,15 +104,25 @@ const SingleDatePicker = (
       if (disabledDate && currentDate) {
         return disabledDate(currentDate, valueStatus);
       }
-      if (todayAfter) {
-        if (currentDate) {
-          return currentDate.isBefore(dateValue, "day");
+      if (currentDate) {
+        if (selectMode) {
+          switch (selectMode) {
+            case SelectMode.BREFORE:
+              return currentDate.isAfter(currentMoment);
+            case SelectMode.AFTER:
+              return currentDate.isBefore(currentMoment);
+            case SelectMode.BREFOREANDTODAY:
+              return currentDate.isAfter(currentMoment, "day");
+            case SelectMode.TODYANDAFTER:
+              return currentDate.isBefore(currentMoment, "day");
+            default:
+              return false;
+          }
         }
-        return false;
       }
       return false;
     },
-    [disabledDate, todayAfter, dateValue, valueStatus]
+    [disabledDate, selectMode, dateValue, valueStatus, currentMoment]
   );
 
   useEffect(
