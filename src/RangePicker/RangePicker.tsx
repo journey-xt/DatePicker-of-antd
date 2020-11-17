@@ -1,4 +1,5 @@
-import React, { useState, useCallback, useEffect } from "react";
+import React, { useState, useCallback, useEffect, useMemo } from "react";
+import { get } from "lodash";
 import styled from "styled-components";
 import { Row, Col } from "antd";
 import moment from "moment";
@@ -10,7 +11,7 @@ import SingleDatePicker, {
   ValueStatus,
   ValueType,
   PickerValue,
-  SelectMode,
+  SelectMode
 } from "../SingleDatePicker";
 
 const LayoutLeftCol = styled(Col)`
@@ -36,6 +37,7 @@ interface Props {
   showToday?: boolean;
   value?: RangePickerValue;
   selectMode?: SelectMode;
+  placeholder?: string | [string, string];
 }
 
 const RangePicker = (props: Props, ref: React.Ref<any>) => {
@@ -45,12 +47,26 @@ const RangePicker = (props: Props, ref: React.Ref<any>) => {
     value,
     disabledDate,
     selectMode,
+    placeholder,
     ...reset
   } = props;
 
+  const [startPlaceholder, endPlaceholder] = useMemo(() => {
+    if (placeholder && Array.isArray(placeholder)) {
+      return [
+        placeholder[0] || "请选择开始时间",
+        placeholder[1] || "请选择结束时间"
+      ];
+    }
+    if (typeof placeholder === "string") {
+      return [placeholder || "请选择开始时间", placeholder || "请选择结束时间"];
+    }
+    return ["请选择开始时间", "请选择开始时间"];
+  }, [placeholder]);
+
   const [RangeValue, setRangeValue] = useState<RangePickerValue>({
     [ValueStatus.Start]: undefined,
-    [ValueStatus.End]: undefined,
+    [ValueStatus.End]: undefined
   });
 
   // 时间变化回调
@@ -66,7 +82,7 @@ const RangePicker = (props: Props, ref: React.Ref<any>) => {
             ]
             ? {
                 ...RangeValue,
-                ...(valueStatus ? { [valueStatus]: value } : {}),
+                ...(valueStatus ? { [valueStatus]: value } : {})
               }
             : undefined
         );
@@ -80,11 +96,11 @@ const RangePicker = (props: Props, ref: React.Ref<any>) => {
             ]
             ? {
                 ...RangeValue,
-                ...(valueStatus ? { [valueStatus]: value } : {}),
+                ...(valueStatus ? { [valueStatus]: value } : {})
               }
             : {
                 [ValueStatus.Start]: undefined,
-                [ValueStatus.End]: undefined,
+                [ValueStatus.End]: undefined
               }
         );
       }
@@ -111,23 +127,25 @@ const RangePicker = (props: Props, ref: React.Ref<any>) => {
         case ValueStatus.Start:
           switch (selectMode) {
             case SelectMode.BREFORE:
-              return !currentDate.isBefore(moment(), "day") || endTime
-                ? !currentDate.isBefore(endTime)
+              return endTime
+                ? !currentDate.isBefore(moment(), "day") ||
+                    !currentDate.isBefore(endTime, "day")
                 : !currentDate.isBefore(moment(), "day");
             case SelectMode.BREFOREANDTODAY:
               return currentDate.isAfter(moment()) || endTime
                 ? currentDate.isAfter(endTime)
                 : currentDate.isAfter(moment());
             case SelectMode.AFTER:
-              return currentDate.isBefore(moment()) || endTime
-                ? currentDate.isBefore(endTime)
-                : false;
+              return endTime
+                ? currentDate.isBefore(moment()) || currentDate.isAfter(endTime)
+                : currentDate.isBefore(moment());
             case SelectMode.TODYANDAFTER:
-              return currentDate.isBefore(moment(), "day") || endTime
-                ? currentDate.isBefore(endTime)
-                : false;
+              return endTime
+                ? currentDate.isBefore(moment(), "day") ||
+                    currentDate.isAfter(endTime)
+                : currentDate.isBefore(moment(), "day");
             default:
-              return false;
+              return endTime ? currentDate.isAfter(moment(endTime)) : false;
           }
         case ValueStatus.End:
           switch (selectMode) {
@@ -147,11 +165,13 @@ const RangePicker = (props: Props, ref: React.Ref<any>) => {
                 ? after || currentDate.isBefore(startTime)
                 : after;
             case SelectMode.TODYANDAFTER:
-              return currentDate.isAfter(moment()) && startTime
+              return startTime
                 ? currentDate.isBefore(startTime)
-                : false;
+                : currentDate.isBefore(moment(), "day");
             default:
-              return false;
+              return startTime
+                ? currentDate.isBefore(moment(startTime))
+                : false;
           }
         default:
           return false;
@@ -161,19 +181,12 @@ const RangePicker = (props: Props, ref: React.Ref<any>) => {
   );
 
   // 上层porps变化
-  useEffect(
-    () => {
-      if (value !== undefined) {
-        setRangeValue(value);
-      } else {
-        setRangeValue({
-          [ValueStatus.Start]: undefined,
-          [ValueStatus.End]: undefined,
-        });
-      }
-    },
-    [value]
-  );
+  useEffect(() => {
+    setRangeValue({
+      [ValueStatus.Start]: get(value, ValueStatus.Start, undefined),
+      [ValueStatus.End]: get(value, ValueStatus.End, undefined)
+    });
+  }, [setRangeValue, value]);
 
   return (
     <span {...reset}>
@@ -187,7 +200,8 @@ const RangePicker = (props: Props, ref: React.Ref<any>) => {
             onChange={rangeChange}
             showToday={showToday}
             valueType={ValueType.TimeStamp}
-            suffixIcon
+            placeholder={startPlaceholder}
+            //  suffixIcon
             defaultPickerValue={
               RangeValue[ValueStatus.Start]
                 ? moment(RangeValue[ValueStatus.Start])
@@ -203,6 +217,7 @@ const RangePicker = (props: Props, ref: React.Ref<any>) => {
             showToday={showToday}
             onChange={rangeChange}
             valueType={ValueType.TimeStamp}
+            placeholder={endPlaceholder}
             defaultPickerValue={
               RangeValue[ValueStatus.Start]
                 ? moment(RangeValue[ValueStatus.Start])

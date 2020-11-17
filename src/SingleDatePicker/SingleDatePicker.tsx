@@ -1,7 +1,7 @@
 import React, { useCallback, useState, useEffect, useMemo } from "react";
 import styled, { css } from "styled-components";
 import { DatePicker } from "antd";
-import {} from "antd/lib/date-picker/";
+// import {} from "antd/lib/date-picker/";
 import moment from "moment";
 import "moment/locale/zh-cn";
 import { transformMoment, transformTimeStamp } from "../utils";
@@ -23,14 +23,14 @@ const afterCss = css`
   top: 0;
   height: 100%;
   width: 24px;
-  background: #fff;
+  // background: #fff;
 `;
 
 const PackDataPick = styled(DatePicker)<{ showElement?: boolean }>`
   position: relative;
   width: 100%;
   & .ant-input {
-    border: 1px solid transparent;
+    //  border: 1px solid transparent;
   }
   &:after {
     ${props => (props.showElement ? afterCss : "")}
@@ -54,6 +54,7 @@ export interface SingleDatePickerProps {
   suffixIcon?: React.ReactNode | null;
   showElement?: boolean;
   selectMode?: SelectMode;
+  placeholder?: string;
 }
 
 const SingleDatePicker = (
@@ -110,7 +111,7 @@ const SingleDatePicker = (
             case SelectMode.BREFORE:
               return currentDate.isAfter(currentMoment);
             case SelectMode.AFTER:
-              return currentDate.isBefore(currentMoment);
+              return !currentDate.isAfter(currentMoment, "day");
             case SelectMode.BREFOREANDTODAY:
               return currentDate.isAfter(currentMoment, "day");
             case SelectMode.TODYANDAFTER:
@@ -125,12 +126,9 @@ const SingleDatePicker = (
     [disabledDate, selectMode, dateValue, valueStatus, currentMoment]
   );
 
-  useEffect(
-    () => {
-      setDateValue(transformMoment(value));
-    },
-    [value]
-  );
+  useEffect(() => {
+    setDateValue(transformMoment(value));
+  }, [value]);
 
   return (
     <PackDataPick

@@ -33,10 +33,7 @@ class DatePickerDemo extends PureComponent<Props, State> {
             <Col span={6}>
               <Form.Item label="单个时间(选择今天及以后)">
                 {getFieldDecorator("singleDate1")(
-                  <SingleDatePicker
-                    selectMode={SelectMode.TODYANDAFTER}
-                    suffixIcon
-                  />
+                  <SingleDatePicker selectMode={SelectMode.TODYANDAFTER} />
                 )}
               </Form.Item>
               {JSON.stringify(getFieldValue("singleDate1"))}
@@ -44,7 +41,7 @@ class DatePickerDemo extends PureComponent<Props, State> {
             <Col span={6}>
               <Form.Item label="单个时间(选择以后)">
                 {getFieldDecorator("singleDate2")(
-                  <SingleDatePicker selectMode={SelectMode.AFTER} suffixIcon />
+                  <SingleDatePicker selectMode={SelectMode.AFTER} />
                 )}
               </Form.Item>
               {JSON.stringify(getFieldValue("singleDate2"))}
@@ -52,10 +49,7 @@ class DatePickerDemo extends PureComponent<Props, State> {
             <Col span={6}>
               <Form.Item label="单个时间(选择之前)">
                 {getFieldDecorator("singleDate3")(
-                  <SingleDatePicker
-                    selectMode={SelectMode.BREFORE}
-                    suffixIcon
-                  />
+                  <SingleDatePicker selectMode={SelectMode.BREFORE} />
                 )}
               </Form.Item>
               {JSON.stringify(getFieldValue("singleDate3"))}
@@ -63,10 +57,7 @@ class DatePickerDemo extends PureComponent<Props, State> {
             <Col span={6}>
               <Form.Item label="单个时间(选择之前及今天)">
                 {getFieldDecorator("singleDate4")(
-                  <SingleDatePicker
-                    selectMode={SelectMode.BREFOREANDTODAY}
-                    suffixIcon
-                  />
+                  <SingleDatePicker selectMode={SelectMode.BREFOREANDTODAY} />
                 )}
               </Form.Item>
               {JSON.stringify(getFieldValue("singleDate4"))}
@@ -137,5 +128,5 @@ class DatePickerDemo extends PureComponent<Props, State> {
 export default Form.create({
   onValuesChange(props, changedValues, allValues) {
     console.log(allValues);
-  },
+  }
 })(DatePickerDemo);
