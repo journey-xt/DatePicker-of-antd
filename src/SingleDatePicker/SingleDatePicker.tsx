@@ -1,61 +1,15 @@
 import React, { useCallback, useState, useEffect, useMemo } from "react";
-import styled, { css } from "styled-components";
-import { DatePicker } from "antd";
-// import {} from "antd/lib/date-picker/";
 import moment from "moment";
 import "moment/locale/zh-cn";
 import { transformMoment, transformTimeStamp } from "../utils";
 
 // 声明文件
 import { Moment } from "moment/moment";
-import { PickerValue } from "./typeing";
+import { SingleDatePickerProps } from "./typeing";
 import { ValueType, ValueStatus, SelectMode } from "./enum";
+import { PackDataPick } from "./styled";
 
 moment.locale("zh-cn");
-
-const afterCss = css`
-  content: "~";
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  position: absolute;
-  right: -24px;
-  top: 0;
-  height: 100%;
-  width: 24px;
-  // background: #fff;
-`;
-
-const PackDataPick = styled(DatePicker)<{ showElement?: boolean }>`
-  position: relative;
-  width: 100%;
-  & .ant-input {
-    //  border: 1px solid transparent;
-  }
-  &:after {
-    ${props => (props.showElement ? afterCss : "")}
-  }
-`;
-
-// 声明组件Props类型
-export interface SingleDatePickerProps {
-  format?: string | string[];
-  //  showTime?: boolean;
-  valueStatus?: ValueStatus;
-  value?: string | number | Moment | Date;
-  disabledDate?: (
-    currentDate: Moment | undefined,
-    valueStatus?: ValueStatus
-  ) => boolean;
-  valueType?: ValueType;
-  onChange?: (value?: PickerValue, valueStatus?: ValueStatus) => void;
-  defaultPickerValue?: Moment;
-  showToday?: boolean;
-  suffixIcon?: React.ReactNode | null;
-  showElement?: boolean;
-  selectMode?: SelectMode;
-  placeholder?: string;
-}
 
 const SingleDatePicker = (
   props: SingleDatePickerProps,
@@ -74,9 +28,6 @@ const SingleDatePicker = (
   } = props;
 
   const [dateValue, setDateValue] = useState(transformMoment(value));
-
-  // 当前时间
-  const [currentMoment, SetCurrentMoment] = useState(moment());
 
   // 变化回调
   const dateChange = useCallback(
@@ -109,13 +60,13 @@ const SingleDatePicker = (
         if (selectMode) {
           switch (selectMode) {
             case SelectMode.BREFORE:
-              return currentDate.isAfter(currentMoment);
+              return currentDate.isAfter(moment());
             case SelectMode.AFTER:
-              return !currentDate.isAfter(currentMoment, "day");
+              return !currentDate.isAfter(moment(), "day");
             case SelectMode.BREFOREANDTODAY:
-              return currentDate.isAfter(currentMoment, "day");
+              return currentDate.isAfter(moment(), "day");
             case SelectMode.TODYANDAFTER:
-              return currentDate.isBefore(currentMoment, "day");
+              return currentDate.isBefore(moment(), "day");
             default:
               return false;
           }
@@ -123,7 +74,7 @@ const SingleDatePicker = (
       }
       return false;
     },
-    [disabledDate, selectMode, dateValue, valueStatus, currentMoment]
+    [disabledDate, selectMode, dateValue, valueStatus]
   );
 
   useEffect(() => {

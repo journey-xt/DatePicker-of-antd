@@ -1,11 +1,13 @@
 import React, { useState, useCallback, useEffect, useMemo } from "react";
 import { get } from "lodash";
-import styled from "styled-components";
-import { Row, Col } from "antd";
+import { Row } from "antd";
 import moment from "moment";
+import { LayoutLeftCol, LayoutRightCol, SpanWarp } from "./styled";
+
 // 声明文件
 import { Moment } from "moment/moment";
-import { RangePickerValue } from "./typeing";
+import { RangePickerValue, RangePickerProps } from "./typeing";
+
 // 组件引用
 import SingleDatePicker, {
   ValueStatus,
@@ -14,40 +16,16 @@ import SingleDatePicker, {
   SelectMode
 } from "../SingleDatePicker";
 
-const LayoutLeftCol = styled(Col)`
-  position: relative;
-  padding-right: 24px !important;
-`;
-
-const LayoutRightCol = styled(Col)`
-  position: relative;
-  padding-left: 0 !important;
-`;
-
-// 声明组件Props类型
-interface Props {
-  disabledDate?: (
-    currentDate: Moment | undefined,
-    valueStatus?: ValueStatus
-  ) => boolean;
-  valueStatus?: ValueStatus;
-  format?: string | string[];
-  valueType?: ValueType;
-  onChange?: (value?: RangePickerValue) => void;
-  showToday?: boolean;
-  value?: RangePickerValue;
-  selectMode?: SelectMode;
-  placeholder?: string | [string, string];
-}
-
-const RangePicker = (props: Props, ref: React.Ref<any>) => {
+const RangePicker = (props: RangePickerProps, ref: React.Ref<any>) => {
   const {
-    showToday,
+    id,
+    name,
     onChange,
     value,
     disabledDate,
     selectMode,
     placeholder,
+    valueType,
     ...reset
   } = props;
 
@@ -189,19 +167,18 @@ const RangePicker = (props: Props, ref: React.Ref<any>) => {
   }, [setRangeValue, value]);
 
   return (
-    <span {...reset}>
+    <span {...(id ? { id: `${id}` } : {})} {...(name ? { name } : {})}>
       <Row gutter={24}>
         <LayoutLeftCol span={12}>
           <SingleDatePicker
+            {...reset}
             showElement
             value={RangeValue[ValueStatus.Start]}
             valueStatus={ValueStatus.Start}
             disabledDate={rangeDisabledDate}
             onChange={rangeChange}
-            showToday={showToday}
             valueType={ValueType.TimeStamp}
             placeholder={startPlaceholder}
-            //  suffixIcon
             defaultPickerValue={
               RangeValue[ValueStatus.Start]
                 ? moment(RangeValue[ValueStatus.Start])
@@ -211,10 +188,10 @@ const RangePicker = (props: Props, ref: React.Ref<any>) => {
         </LayoutLeftCol>
         <LayoutRightCol span={12}>
           <SingleDatePicker
+            {...reset}
             value={RangeValue[ValueStatus.End]}
             valueStatus={ValueStatus.End}
             disabledDate={rangeDisabledDate}
-            showToday={showToday}
             onChange={rangeChange}
             valueType={ValueType.TimeStamp}
             placeholder={endPlaceholder}
@@ -230,4 +207,4 @@ const RangePicker = (props: Props, ref: React.Ref<any>) => {
   );
 };
 
-export default React.forwardRef<any, Props>(RangePicker);
+export default React.forwardRef<any, RangePickerProps>(RangePicker);
