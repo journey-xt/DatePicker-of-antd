@@ -2,7 +2,7 @@ import React, { useState, useCallback, useEffect, useMemo } from "react";
 import { get } from "lodash";
 import { Row } from "antd";
 import moment from "moment";
-import { LayoutLeftCol, LayoutRightCol, SpanWarp } from "./styled";
+import { LayoutLeftCol, LayoutRightCol } from "./styled";
 
 // 声明文件
 import { Moment } from "moment/moment";
@@ -25,7 +25,7 @@ const RangePicker = (props: RangePickerProps, ref: React.Ref<any>) => {
     disabledDate,
     selectMode,
     placeholder,
-    valueType,
+    valueType = ValueType.TimeStamp,
     ...reset
   } = props;
 
@@ -177,7 +177,6 @@ const RangePicker = (props: RangePickerProps, ref: React.Ref<any>) => {
             valueStatus={ValueStatus.Start}
             disabledDate={rangeDisabledDate}
             onChange={rangeChange}
-            valueType={ValueType.TimeStamp}
             placeholder={startPlaceholder}
             defaultPickerValue={
               RangeValue[ValueStatus.Start]
@@ -193,7 +192,6 @@ const RangePicker = (props: RangePickerProps, ref: React.Ref<any>) => {
             valueStatus={ValueStatus.End}
             disabledDate={rangeDisabledDate}
             onChange={rangeChange}
-            valueType={ValueType.TimeStamp}
             placeholder={endPlaceholder}
             defaultPickerValue={
               RangeValue[ValueStatus.Start]

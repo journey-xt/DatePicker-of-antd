@@ -11,6 +11,4 @@ const LayoutRightCol = styled(Col)`
   padding-left: 0 !important;
 `;
 
-const SpanWarp = styled.span``;
-
-export { LayoutLeftCol, LayoutRightCol, SpanWarp };
+export { LayoutLeftCol, LayoutRightCol };
