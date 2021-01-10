@@ -10,7 +10,7 @@ export interface SingleDatePickerProps
     DatePickerProps,
     "format" | "disabledDate" | "value" | "onChange" | "open" | "onOpenChange"
   > {
-  format?: string | string[];
+  format?: string;
   valueStatus?: ValueStatus;
   value?: string | number | Moment | Date;
   disabledDate?: (

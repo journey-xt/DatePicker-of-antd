@@ -24,4 +24,15 @@ const PackDataPick = styled(DatePicker)<{ showElement?: boolean }>`
   }
 `;
 
-export { afterCss, PackDataPick };
+const RenderTimeWarp = styled.div`
+  padding-right: 50px;
+  position: relative;
+  .ant-btn {
+    position: absolute;
+    right: 0;
+    top: 50%;
+    margin-top: -12px;
+  }
+`;
+
+export { afterCss, PackDataPick, RenderTimeWarp };

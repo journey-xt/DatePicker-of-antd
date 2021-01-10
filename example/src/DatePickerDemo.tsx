@@ -100,17 +100,14 @@ class DatePickerDemo extends PureComponent<Props, State> {
               </Form.Item>
               {JSON.stringify(getFieldValue("rangeDate4"))}
             </Col>
-            {/* <Col span={8}>
+            <Col span={6}>
               <Form.Item label="单个时间(带时间)">
                 {getFieldDecorator("singleDateTime")(
-                  <SingleDatePicker
-                    format="YYYY-MM-DD HH:mm:ss"
-                    selectTodayAfter
-                  />
+                  <SingleDatePicker format="YYYY-MM-DD hh:mm:ss" />
                 )}
               </Form.Item>
             </Col>
-            
+            {/*
             <Col span={8}>
               <Form.Item label="联级时间">
                 {getFieldDecorator("rangeDateTime")(

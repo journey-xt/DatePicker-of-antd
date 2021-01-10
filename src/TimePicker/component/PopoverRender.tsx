@@ -1,4 +1,4 @@
-import React, { PureComponent } from "react";
+import React, { useCallback, useMemo } from "react";
 import styled from "styled-components";
 import { chunk } from "lodash";
 import PackTag from "./PackTag";
@@ -15,52 +15,44 @@ const RowTagWarp = styled.div`
 `;
 
 interface Props {
-  onChange: (tag, checked) => void;
+  onChange: (tag: any, checked: boolean) => void;
   rownum: Array<{ value: string; disabled: boolean }>;
   value: any;
 }
 
-interface State {}
+const PopoverRender = (props: Props) => {
+  const { onChange, rownum, value } = props;
 
-class PopoverRender extends PureComponent<Props, State> {
-  constructor(props) {
-    super(props);
-    this.state = {};
-  }
+  const tagChange = useCallback(
+    (tag: any, checked: boolean) => {
+      if (onChange) {
+        onChange(tag, checked);
+      }
+    },
+    [onChange]
+  );
 
-  // 点击 具体时间回调
-  handleOnChange = (tag: string, checked: boolean) => {
-    const { onChange } = this.props;
-    if (onChange) {
-      onChange(tag, checked);
-    }
-  };
+  const chunkRownum = useMemo(() => chunk(rownum, 5), [rownum]);
 
-  render() {
-    const { rownum, value } = this.props;
-
-    const chunkRownum = chunk(rownum, 5);
-
-    return (
-      <Warp>
-        {chunkRownum.map((item, index) => (
-          <RowTagWarp key={index}>
-            {item.map(tag => (
-              <PackTag
-                key={tag.value}
-                tags={tag}
-                disabled={tag.disabled}
-                checked={Number(value) === Number(tag.value)}
-                onChange={this.handleOnChange}
-              >
-                {tag.value}
-              </PackTag>
-            ))}
-          </RowTagWarp>
-        ))}
-      </Warp>
-    );
-  }
-}
+  return (
+    <Warp>
+      {chunkRownum.map((item, index) => (
+        <RowTagWarp key={index}>
+          {item.map(tag => (
+            <PackTag
+              key={tag.value}
+              tags={tag}
+              disabled={tag.disabled}
+              checked={Number(value) === Number(tag.value)}
+              onChange={tagChange}
+            >
+              {tag.value}
+            </PackTag>
+          ))}
+        </RowTagWarp>
+      ))}
+    </Warp>
+  );
+};
 
 export default PopoverRender;

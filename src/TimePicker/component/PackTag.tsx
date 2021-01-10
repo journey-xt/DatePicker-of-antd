@@ -1,4 +1,4 @@
-import React, { PureComponent } from "react";
+import React, { useCallback } from "react";
 import styled from "styled-components";
 import { Tag } from "antd";
 
@@ -21,33 +21,23 @@ interface Props {
   disabled: boolean;
 }
 
-class PackTag extends PureComponent<Props> {
-  constructor(props) {
-    super(props);
-    this.state = {};
-  }
+const PackTag = (props: Props) => {
+  const { onChange, tags, disabled, checked, children } = props;
 
-  // 点击 具体时间回调
-  handleOnChange = checked => {
-    const { onChange, tags, disabled } = this.props;
-    if (onChange && !disabled) {
-      onChange(tags.value, checked);
-    }
-  };
+  const tagSelected = useCallback(
+    (checked: boolean) => {
+      if (onChange && !disabled) {
+        onChange(tags.value, checked);
+      }
+    },
+    [onChange]
+  );
 
-  render() {
-    const { children, checked, disabled } = this.props;
-
-    return (
-      <PackLayoutTag
-        checked={checked}
-        disabled={disabled}
-        onChange={this.handleOnChange}
-      >
-        {children}
-      </PackLayoutTag>
-    );
-  }
-}
+  return (
+    <PackLayoutTag checked={checked} disabled={disabled} onChange={tagSelected}>
+      {children}
+    </PackLayoutTag>
+  );
+};
 
 export default PackTag;

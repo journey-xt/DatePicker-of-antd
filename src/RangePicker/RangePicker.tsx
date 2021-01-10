@@ -20,6 +20,7 @@ const RangePicker = (props: RangePickerProps, ref: React.Ref<any>) => {
   const {
     id,
     name,
+    format,
     onChange,
     value,
     disabledDate,
@@ -41,6 +42,16 @@ const RangePicker = (props: RangePickerProps, ref: React.Ref<any>) => {
     }
     return ["请选择开始时间", "请选择开始时间"];
   }, [placeholder]);
+
+  const [startFormat, endFormat] = useMemo(() => {
+    if (typeof format === "string") {
+      return [format, format];
+    }
+    if (Array.isArray(format)) {
+      return format;
+    }
+    return ["YYYY-HH-MM", "YYYY-HH-MM"];
+  }, [format]);
 
   const [RangeValue, setRangeValue] = useState<RangePickerValue>({
     [ValueStatus.Start]: undefined,
@@ -173,6 +184,7 @@ const RangePicker = (props: RangePickerProps, ref: React.Ref<any>) => {
           <SingleDatePicker
             {...reset}
             showElement
+            format={startFormat}
             value={RangeValue[ValueStatus.Start]}
             valueStatus={ValueStatus.Start}
             disabledDate={rangeDisabledDate}
@@ -188,6 +200,7 @@ const RangePicker = (props: RangePickerProps, ref: React.Ref<any>) => {
         <LayoutRightCol span={12}>
           <SingleDatePicker
             {...reset}
+            format={endFormat}
             value={RangeValue[ValueStatus.End]}
             valueStatus={ValueStatus.End}
             disabledDate={rangeDisabledDate}

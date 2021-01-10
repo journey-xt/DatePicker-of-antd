@@ -1,13 +1,16 @@
 import React, { useCallback, useState, useEffect, useMemo } from "react";
+import { Button } from "antd";
 import moment from "moment";
 import "moment/locale/zh-cn";
+import TimePicker from "../TimePicker";
 import { transformMoment, transformTimeStamp } from "../utils";
+import { pattern } from "../tools/regex";
 
 // 声明文件
 import { Moment } from "moment/moment";
 import { SingleDatePickerProps } from "./typeing";
 import { ValueType, ValueStatus, SelectMode } from "./enum";
-import { PackDataPick } from "./styled";
+import { PackDataPick, RenderTimeWarp } from "./styled";
 
 moment.locale("zh-cn");
 
@@ -16,7 +19,7 @@ const SingleDatePicker = (
   ref: React.Ref<any>
 ) => {
   const {
-    // format = "YYYY-MM-DD",
+    format = "YYYY-MM-DD",
     valueStatus = ValueStatus.Start,
     valueType = ValueType.TimeStamp,
     value,
@@ -77,6 +80,33 @@ const SingleDatePicker = (
     [disabledDate, selectMode, dateValue, valueStatus]
   );
 
+  // 时、分、秒 format
+  const timeFormat = useMemo(() => {
+    const match = format.match(pattern.TimeFormat);
+
+    if (match && Array.isArray(match)) {
+      return match[0];
+    }
+
+    return undefined;
+  }, [format]);
+
+  // 添加额外的的页脚render
+  // 需要选择 时分秒生成
+  const renderExtraFooter = useCallback(() => {
+    if (timeFormat) {
+      return (
+        <RenderTimeWarp>
+          <TimePicker format={timeFormat} />
+          <Button size="small" type="primary">
+            确定
+          </Button>
+        </RenderTimeWarp>
+      );
+    }
+    return null;
+  }, [timeFormat]);
+
   useEffect(() => {
     setDateValue(transformMoment(value));
   }, [value]);
@@ -88,6 +118,7 @@ const SingleDatePicker = (
       onChange={dateChange}
       disabledDate={disabledTime}
       defaultPickerValue={defaultPickerValue}
+      renderExtraFooter={renderExtraFooter}
     />
   );
 };

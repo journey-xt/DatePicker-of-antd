@@ -3,7 +3,7 @@ const fillTen = (number: number): string => {
   if (number < 10) {
     return `0${number}`;
   }
-  return String(number);
+  return `${number}`;
 };
 
 export { fillTen };
