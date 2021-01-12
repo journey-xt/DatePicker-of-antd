@@ -7,10 +7,10 @@ const afterCss = css`
   align-items: center;
   justify-content: center;
   position: absolute;
-  right: -12px;
+  right: -24px;
   top: 0;
   height: 100%;
-  width: 12px;
+  width: 24px;
 `;
 
 const PackDataPick = styled(DatePicker)<{ showElement?: boolean }>`
