@@ -9,12 +9,12 @@ const PackLayoutTag = styled(Tag.CheckableTag)<{ disabled: boolean }>`
 `;
 
 interface ITag {
-  value: string;
+  value: number;
   disabled: boolean;
 }
 
 interface Props {
-  onChange: (tag: string, checked: boolean) => void;
+  onChange: (tag: number) => void;
   tags: ITag;
   checked: boolean;
   children: string;
@@ -27,7 +27,7 @@ const PackTag = (props: Props) => {
   const tagSelected = useCallback(
     (checked: boolean) => {
       if (onChange && !disabled) {
-        onChange(tags.value, checked);
+        onChange(tags.value);
       }
     },
     [onChange]

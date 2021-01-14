@@ -8,7 +8,7 @@ export type PickerValue = string | number | Moment;
 export interface SingleDatePickerProps
   extends Omit<
     DatePickerProps,
-    "format" | "disabledDate" | "value" | "onChange" | "open" | "onOpenChange"
+    "format" | "disabledDate" | "value" | "onChange"
   > {
   format?: string;
   valueStatus?: ValueStatus;

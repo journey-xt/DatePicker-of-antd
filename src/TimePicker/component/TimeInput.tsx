@@ -1,17 +1,9 @@
-import React, { useCallback, useRef, useState } from "react";
+import React, { useCallback, useRef, useMemo } from "react";
 import styled from "styled-components";
 import { Popover, Input, InputNumber } from "antd";
 import { TimeType } from "../enum";
 import PopoverRender from "./PopoverRender";
-
-const PackInput = styled(Input)`
-  &.ant-input {
-    display: inline-block;
-    min-height: 38px;
-    width: 50px;
-    padding: 4px 16px;
-  }
-`;
+import { computeTag } from "../../utils";
 
 const PackInputNumebr = styled(InputNumber)`
   &.ant-input-number {
@@ -26,46 +18,57 @@ const PackInputNumebr = styled(InputNumber)`
 `;
 
 interface Props {
-  // type: TimeType;
+  timeType: TimeType;
   max: number;
-  value: any;
-  format: any;
+  step: number;
+  value: number;
+  format: string;
+  onChange?: (value: number, type: TimeType) => void;
 }
 
 const TimeInPut = (props: Props) => {
-  const { value, format, max, ...reset } = props;
+  const { timeType, value, format, max, step, onChange, ...reset } = props;
 
   // input dom
-  const inputRef = useRef<HTMLInputElement | undefined>(undefined);
+  const inputRef = useRef<InputNumber | null>(null);
 
-  // 标识 是否是点击数值变化
-  const handleChange = useRef<boolean>(false);
+  const tagSlectedChange = useCallback(
+    (tag: number) => {
+      if (onChange) {
+        onChange(tag || 0, timeType);
+      }
+    },
+    [timeType]
+  );
 
-  // popover 显示
-  const [popoverVisible, setPopoverVisible] = useState(false);
-
-  const onVisibleChange = useCallback(() => {}, []);
-
-  const tagSlectedChange = useCallback(() => {}, []);
-
-  const inputChange = useCallback(inputNumber => {
-    console.log(inputNumber);
-    if (handleChange) {
-      handleChange.current = true;
-    }
-  }, []);
+  const inputChange = useCallback(
+    (inputNumber: number | undefined) => {
+      if (onChange && inputNumber && inputNumber <= max) {
+        onChange(inputNumber, timeType);
+      }
+    },
+    [onChange, timeType, max]
+  );
 
   // 获取焦点
   const inputFocus = useCallback(() => {
-    console.log(111);
-  }, []);
-
-  // 失去焦点
-  const inputBlur = useCallback(() => {
-    if (handleChange) {
-      handleChange.current = false;
+    if (
+      inputRef &&
+      inputRef.current &&
+      // @ts-ignore
+      inputRef.current.inputNumberRef &&
+      // @ts-ignore
+      inputRef.current.inputNumberRef.input
+    ) {
+      // @ts-ignore
+      inputRef.current.inputNumberRef.input.select();
     }
   }, []);
+
+  const rownum = useMemo(() => computeTag(max, step), [max, step]);
+
+  // 失去焦点
+  const inputBlur = useCallback(() => {}, []);
 
   const inputPressEnter = useCallback(() => {}, []);
 
@@ -74,24 +77,21 @@ const TimeInPut = (props: Props) => {
       trigger="click"
       mouseEnterDelay={50}
       mouseLeaveDelay={0}
-      visible={popoverVisible}
       getPopupContainer={triggerNode => triggerNode}
       autoAdjustOverflow
-      onVisibleChange={onVisibleChange}
       overlayStyle={{ padding: "12px 4px" }}
       content={
         <PopoverRender
           {...reset}
           value={value}
-          rownum={[]}
+          rownum={rownum}
           onChange={tagSlectedChange}
         />
       }
-      placement={format === "hh" ? "topLeft" : "top"}
     >
       <PackInputNumebr
-        //   ref={inputRef}
-        value={Number(value)}
+        ref={inputRef}
+        value={value}
         max={max}
         min={0}
         onChange={inputChange}

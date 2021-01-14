@@ -20,17 +20,22 @@ const SingleDatePicker = (
 ) => {
   const {
     format = "YYYY-MM-DD",
-    valueStatus = ValueStatus.Start,
+    valueStatus = ValueStatus.None,
     valueType = ValueType.TimeStamp,
     value,
     onChange,
     defaultPickerValue,
     disabledDate,
     selectMode,
+    open = false,
+    onOpenChange: upOnOpenChange,
     ...reset
   } = props;
 
   const [dateValue, setDateValue] = useState(transformMoment(value));
+
+  // 面板 open
+  const [datePanelOpen, setDatePanelOpen] = useState(open);
 
   // 变化回调
   const dateChange = useCallback(
@@ -91,21 +96,49 @@ const SingleDatePicker = (
     return undefined;
   }, [format]);
 
+  // timePicker 变化回调
+  const timePickerChange = useCallback(
+    (timeValue: moment.Moment) => {
+      dateChange(timeValue);
+    },
+    [dateChange]
+  );
+
+  // 关闭 datepanel
+  const closePanel = useCallback(() => {
+    setDatePanelOpen(false);
+  }, [setDatePanelOpen]);
+
   // 添加额外的的页脚render
   // 需要选择 时分秒生成
   const renderExtraFooter = useCallback(() => {
     if (timeFormat) {
       return (
         <RenderTimeWarp>
-          <TimePicker format={timeFormat} />
-          <Button size="small" type="primary">
+          <TimePicker
+            format={timeFormat}
+            onChange={timePickerChange}
+            value={dateValue}
+          />
+          <Button size="small" type="primary" onClick={closePanel}>
             确定
           </Button>
         </RenderTimeWarp>
       );
     }
     return null;
-  }, [timeFormat]);
+  }, [timeFormat, dateValue, timePickerChange, closePanel]);
+
+  // 时间组件面板 切换回调
+  const onOpenChange = useCallback(
+    (status: boolean) => {
+      if (upOnOpenChange) {
+        return upOnOpenChange(status);
+      }
+      setDatePanelOpen(status);
+    },
+    [upOnOpenChange, setDatePanelOpen]
+  );
 
   useEffect(() => {
     setDateValue(transformMoment(value));
@@ -114,10 +147,13 @@ const SingleDatePicker = (
   return (
     <PackDataPick
       {...reset}
+      open={datePanelOpen}
+      format={format}
       value={dateValue}
       onChange={dateChange}
       disabledDate={disabledTime}
       defaultPickerValue={defaultPickerValue}
+      onOpenChange={onOpenChange}
       renderExtraFooter={renderExtraFooter}
     />
   );

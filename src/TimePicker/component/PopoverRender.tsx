@@ -1,11 +1,13 @@
 import React, { useCallback, useMemo } from "react";
 import styled from "styled-components";
 import { chunk } from "lodash";
+import { fillTen } from "../../utils";
 import PackTag from "./PackTag";
 
 const Warp = styled.div`
   text-align: left;
   user-select: none;
+  width: 182px;
 `;
 
 const RowTagWarp = styled.div`
@@ -15,18 +17,18 @@ const RowTagWarp = styled.div`
 `;
 
 interface Props {
-  onChange: (tag: any, checked: boolean) => void;
-  rownum: Array<{ value: string; disabled: boolean }>;
-  value: any;
+  onChange: (tag: number) => void;
+  rownum: Array<{ value: number; disabled: boolean }>;
+  value: number;
 }
 
 const PopoverRender = (props: Props) => {
   const { onChange, rownum, value } = props;
 
   const tagChange = useCallback(
-    (tag: any, checked: boolean) => {
+    (tag: number) => {
       if (onChange) {
-        onChange(tag, checked);
+        onChange(tag);
       }
     },
     [onChange]
@@ -43,10 +45,10 @@ const PopoverRender = (props: Props) => {
               key={tag.value}
               tags={tag}
               disabled={tag.disabled}
-              checked={Number(value) === Number(tag.value)}
+              checked={value === tag.value}
               onChange={tagChange}
             >
-              {tag.value}
+              {fillTen(tag.value)}
             </PackTag>
           ))}
         </RowTagWarp>

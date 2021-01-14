@@ -1,10 +1,18 @@
+import { HOUR, MINUTE, SEC } from "../constant";
+
 export enum TimeType {
   /** 小时 */
-  HOUR = "h",
+  HOUR = "hour",
 
   /** 分 */
-  MINUTE = "m",
+  MINUTE = "minute",
 
   /** 秒 */
-  SECOND = "s"
+  SECOND = "second"
 }
+
+export const TimeTypeObj = {
+  [HOUR]: TimeType.HOUR,
+  [MINUTE]: TimeType.MINUTE,
+  [SEC]: TimeType.SECOND
+};

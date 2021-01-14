@@ -1,12 +1,13 @@
 export enum ValueType {
   TimeStamp = "timeStamp", // 时间戳
   TimeString = "timeString", // 字符串时间
-  Moment = "moment", // moment对象
+  Moment = "moment" // moment对象
 }
 
 export enum ValueStatus {
   Start = "start", // 开始时间
   End = "end", // 结束时间
+  None = "none" // 不做取值操作
 }
 
 // 选择模式
@@ -29,5 +30,5 @@ export enum SelectMode {
   /**
    * 以前
    */
-  BREFORE = "brefore",
+  BREFORE = "brefore"
 }

@@ -15,6 +15,7 @@ const transformTimeStamp = (
       return date ? date.startOf("day").valueOf() : undefined;
     case ValueStatus.End:
       return date ? date.endOf("day").valueOf() : undefined;
+    case ValueStatus.None:
     default:
       return date ? date.valueOf() : undefined;
   }

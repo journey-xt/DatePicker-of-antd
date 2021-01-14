@@ -1,13 +1,10 @@
-import React, { useCallback, useMemo } from "react";
-import { Button } from "antd";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import styled from "styled-components";
 import moment, { Moment } from "moment";
-import { memoize } from "lodash";
 import TimeInput from "./component/TimeInput";
-import { pattern } from "../tools/regex";
-// import { TimeFormat } from "./index.d";
-import { TIMEFORMAT, HOUR, MINUTE, SEC, HMS } from "../constant";
-import { matchTimeFormat, fillTen, transformMoment } from "../utils";
+import { TimeType, TimeTypeObj } from "./enum";
+import { TIMEFORMAT, HOUR, MINUTE, SEC } from "../constant";
+import { matchTimeFormat, transformMoment } from "../utils";
 
 const Warp = styled.div`
   padding: 5px 0;
@@ -22,15 +19,13 @@ interface Props {
   disabledHours?: () => Array<number>;
   disabledMinutes?: () => Array<number>;
   disabledSeconds?: () => Array<number>;
-  // timePickerOnOpenChange: (status: boolean) => void;
-  // datePickerOnOpenChange: (status: boolean) => void;
+  onChange?: (date: moment.Moment) => void;
 }
 
 interface Step {
   step: number;
   max: number;
-  value: string;
-  // disabledTime: () => void;
+  value: number;
   hour?: number;
   minute?: number;
 }
@@ -39,6 +34,7 @@ const TimePicker = (props: Props) => {
   const {
     format,
     value,
+    onChange,
     hourStep = 1,
     minuteStep = 5,
     secondStep = 10,
@@ -46,6 +42,8 @@ const TimePicker = (props: Props) => {
     disabledMinutes,
     disabledSeconds
   } = props;
+
+  const [time, setTime] = useState<moment.Moment | undefined>(moment(value));
 
   const timeItemProps: (timeType: string) => Step = useCallback(
     (timeType: string) => {
@@ -58,7 +56,7 @@ const TimePicker = (props: Props) => {
           return {
             step: minuteStep,
             max: 60,
-            value: fillTen(minute),
+            value: minute,
             //    disabledTime: disabledMinutes,
             hour,
             minute
@@ -67,7 +65,7 @@ const TimePicker = (props: Props) => {
           return {
             step: secondStep,
             max: 60,
-            value: fillTen(second),
+            value: second,
             //    disabledTime: disabledSeconds,
             hour,
             minute
@@ -78,7 +76,7 @@ const TimePicker = (props: Props) => {
           return {
             step: hourStep,
             max: 24,
-            value: fillTen(hour),
+            value: hour,
             //      disabledTime: disabledHours,
             hour,
             minute
@@ -95,6 +93,19 @@ const TimePicker = (props: Props) => {
       disabledMinutes,
       disabledSeconds
     ]
+  );
+
+  // 时间变化回调
+  const timeChange = useCallback(
+    (value: number, type: TimeType) => {
+      const changeMoment = moment(time).set(type, value);
+      if (onChange) {
+        onChange(changeMoment);
+      } else {
+        setTime(changeMoment);
+      }
+    },
+    [time, onChange, setTime]
   );
 
   // 返回分隔符号
@@ -115,13 +126,27 @@ const TimePicker = (props: Props) => {
     return "-";
   }, []);
 
+  const formatBackTimeType = useCallback(
+    (type: string) => TimeTypeObj[type],
+    []
+  );
+
   const timeGroup = useMemo(() => format.split(splitSymbol), [splitSymbol]);
+
+  useEffect(() => {
+    setTime(transformMoment(value) || moment());
+  }, [value, setTime]);
 
   return (
     <Warp>
       {timeGroup.map(item => (
         <span key={item}>
-          <TimeInput format={item} {...timeItemProps(item)} />
+          <TimeInput
+            format={item}
+            timeType={formatBackTimeType(item)}
+            onChange={timeChange}
+            {...timeItemProps(item)}
+          />
           {renderSuffix(item)}
         </span>
       ))}
