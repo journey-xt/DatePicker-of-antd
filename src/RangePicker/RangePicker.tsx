@@ -7,6 +7,8 @@ import { LayoutLeftCol, LayoutRightCol } from "./styled";
 // 声明文件
 import { Moment } from "moment/moment";
 import { RangePickerValue, RangePickerProps } from "./typeing";
+import { Placeholder } from "../enum/Placeholder.enum";
+import { FormatDefault } from "../enum/FormatDefault.enum";
 
 // 组件引用
 import SingleDatePicker, {
@@ -33,14 +35,14 @@ const RangePicker = (props: RangePickerProps, ref: React.Ref<any>) => {
   const [startPlaceholder, endPlaceholder] = useMemo(() => {
     if (placeholder && Array.isArray(placeholder)) {
       return [
-        placeholder[0] || "请选择开始时间",
-        placeholder[1] || "请选择结束时间"
+        placeholder[0] || Placeholder.START,
+        placeholder[1] || Placeholder.END
       ];
     }
     if (typeof placeholder === "string") {
-      return [placeholder || "请选择开始时间", placeholder || "请选择结束时间"];
+      return [placeholder || Placeholder.START, placeholder || Placeholder.END];
     }
-    return ["请选择开始时间", "请选择开始时间"];
+    return [Placeholder.START, Placeholder.END];
   }, [placeholder]);
 
   const [startFormat, endFormat] = useMemo(() => {
@@ -50,7 +52,7 @@ const RangePicker = (props: RangePickerProps, ref: React.Ref<any>) => {
     if (Array.isArray(format)) {
       return format;
     }
-    return ["YYYY-HH-MM", "YYYY-HH-MM"];
+    return [FormatDefault.FORMAT_DEFAULT, FormatDefault.FORMAT_DEFAULT];
   }, [format]);
 
   const [RangeValue, setRangeValue] = useState<RangePickerValue>({

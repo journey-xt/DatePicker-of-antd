@@ -20,6 +20,7 @@ export interface RangePickerProps
     | "showElement"
     | "disabledDate"
     | "showElement"
+    | "format"
   > {
   disabledDate?: (
     currentDate: Moment | undefined,
