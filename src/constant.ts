@@ -1,12 +1,12 @@
-const HOUR = "hh";
+const HOUR = "HH";
 
 const MINUTE = "mm";
 
 const SEC = "ss";
 
-const HMS = "hh:mm:ss";
+const HMS = "HH:mm:ss";
 
-const HM = "hh:mm";
+const HM = "HH:mm";
 
 // 非公务员上班时间段
 const SENIORPERSON = [0, 1, 2, 3, 4, 5, 6, 7, 23];
