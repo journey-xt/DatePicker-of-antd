@@ -23,8 +23,8 @@ const SingleDatePicker = (
     valueStatus = ValueStatus.None,
     valueType = ValueType.TimeStamp,
     value,
-    onChange,
     defaultPickerValue,
+    onChange,
     disabledDate,
     selectMode,
     open = false,
@@ -33,6 +33,8 @@ const SingleDatePicker = (
   } = props;
 
   const [dateValue, setDateValue] = useState(transformMoment(value));
+
+  const [defaultValue, setDefaultValue] = useState(defaultPickerValue);
 
   // 面板 open
   const [datePanelOpen, setDatePanelOpen] = useState(open);
@@ -106,8 +108,9 @@ const SingleDatePicker = (
 
   // 关闭 datepanel
   const closePanel = useCallback(() => {
+    dateChange(dateValue || defaultValue || null);
     setDatePanelOpen(false);
-  }, [setDatePanelOpen]);
+  }, [setDatePanelOpen, dateChange, dateValue, defaultValue]);
 
   // 添加额外的的页脚render
   // 需要选择 时分秒生成
@@ -118,7 +121,7 @@ const SingleDatePicker = (
           <TimePicker
             format={timeFormat}
             onChange={timePickerChange}
-            value={dateValue}
+            value={dateValue || defaultValue}
           />
           <Button size="small" type="primary" onClick={closePanel}>
             确定
@@ -127,17 +130,20 @@ const SingleDatePicker = (
       );
     }
     return null;
-  }, [timeFormat, dateValue, timePickerChange, closePanel]);
+  }, [timeFormat, dateValue, defaultValue, timePickerChange, closePanel]);
 
   // 时间组件面板 切换回调
   const onOpenChange = useCallback(
     (status: boolean) => {
+      if (status && !dateValue) {
+        setDefaultValue(moment());
+      }
       if (upOnOpenChange) {
         return upOnOpenChange(status);
       }
       setDatePanelOpen(status);
     },
-    [upOnOpenChange, setDatePanelOpen]
+    [upOnOpenChange, setDatePanelOpen, setDefaultValue, dateValue]
   );
 
   useEffect(() => {
@@ -150,9 +156,9 @@ const SingleDatePicker = (
       open={datePanelOpen}
       format={format}
       value={dateValue}
+      defaultPickerValue={defaultValue}
       onChange={dateChange}
       disabledDate={disabledTime}
-      defaultPickerValue={defaultPickerValue}
       onOpenChange={onOpenChange}
       renderExtraFooter={renderExtraFooter}
     />

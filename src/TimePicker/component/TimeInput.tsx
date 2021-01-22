@@ -1,6 +1,6 @@
 import React, { useCallback, useRef, useMemo } from "react";
 import styled from "styled-components";
-import { Popover, Input, InputNumber } from "antd";
+import { Popover, InputNumber } from "antd";
 import { TimeType } from "../enum";
 import PopoverRender from "./PopoverRender";
 import { computeTag } from "../../utils";
@@ -43,8 +43,15 @@ const TimeInPut = (props: Props) => {
 
   const inputChange = useCallback(
     (inputNumber: number | undefined) => {
-      if (onChange && inputNumber && inputNumber <= max) {
-        onChange(inputNumber, timeType);
+      console.log(inputNumber);
+      if (onChange) {
+        if (
+          (inputNumber || inputNumber === 0) &&
+          inputNumber >= -1 &&
+          inputNumber <= max
+        ) {
+          onChange(inputNumber, timeType);
+        }
       }
     },
     [onChange, timeType, max]
@@ -68,9 +75,14 @@ const TimeInPut = (props: Props) => {
   const rownum = useMemo(() => computeTag(max, step), [max, step]);
 
   // 失去焦点
-  const inputBlur = useCallback(() => {}, []);
+  //  const inputBlur = useCallback(() => {}, []);
 
-  const inputPressEnter = useCallback(() => {}, []);
+  const inputPressEnter = useCallback(() => {
+    if (inputRef && inputRef.current) {
+      console.log(inputRef.current);
+      inputRef.current.blur();
+    }
+  }, []);
 
   return (
     <Popover
@@ -93,10 +105,10 @@ const TimeInPut = (props: Props) => {
         ref={inputRef}
         value={value}
         max={max}
-        min={0}
+        min={-1}
         onChange={inputChange}
         onFocus={inputFocus}
-        onBlur={inputBlur}
+        //   onBlur={inputBlur}
         onPressEnter={inputPressEnter}
       />
     </Popover>

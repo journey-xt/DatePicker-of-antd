@@ -6,10 +6,15 @@ import moment from "moment";
 const transformMoment = (
   date?: string | number | moment.Moment | Date
 ): moment.Moment | undefined => {
+  if (!date) {
+    return undefined;
+  }
+
   const transformDate = moment(date);
   if (date && transformDate.isValid()) {
     return transformDate;
   }
+
   return undefined;
 };
 
