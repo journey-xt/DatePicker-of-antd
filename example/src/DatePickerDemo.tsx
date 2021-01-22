@@ -103,18 +103,17 @@ class DatePickerDemo extends PureComponent<Props, State> {
             <Col span={6}>
               <Form.Item label="单个时间(带时间)">
                 {getFieldDecorator("singleDateTime")(
-                  <SingleDatePicker format="YYYY-MM-DD hh:mm:ss" />
+                  <SingleDatePicker format="YYYY-MM-DD HH:mm:ss" />
                 )}
               </Form.Item>
             </Col>
-            {/*
-            <Col span={8}>
+            <Col span={6}>
               <Form.Item label="联级时间">
                 {getFieldDecorator("rangeDateTime")(
-                  <RangePicker format="YYYY-MM-DD HH:mm:ss" selectTodayAfter />
+                  <RangePicker format="YYYY-MM-DD HH:mm:ss" />
                 )}
               </Form.Item>
-            </Col> */}
+            </Col>
           </Row>
         </Form>
       </Layout>

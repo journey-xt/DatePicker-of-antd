@@ -1,4 +1,4 @@
 export enum FormatDefault {
   /** 日期 */
-  FORMAT_DEFAULT = "YYYY-HH-MM"
+  FORMAT_DEFAULT = "YYYY-MM-DD"
 }
