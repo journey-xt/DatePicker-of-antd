@@ -39,13 +39,32 @@ const SingleDatePicker = (
   // 面板 open
   const [datePanelOpen, setDatePanelOpen] = useState(open);
 
+  // 时、分、秒 format
+  const timeFormat = useMemo(() => {
+    const match = format.match(pattern.TimeFormat);
+
+    console.log(match);
+
+    if (match && Array.isArray(match)) {
+      return match[0];
+    }
+
+    return undefined;
+  }, [format]);
+
   // 变化回调
   const dateChange = useCallback(
     (date: Moment | null, dateString?: string) => {
       if (onChange) {
         switch (valueType) {
           case ValueType.TimeStamp:
-            return onChange(transformTimeStamp(date, valueStatus), valueStatus);
+            return onChange(
+              transformTimeStamp(
+                date,
+                timeFormat ? ValueStatus.None : valueStatus
+              ),
+              valueStatus
+            );
           case ValueType.TimeString:
             return onChange(dateString, valueStatus);
           case ValueType.Moment:
@@ -56,7 +75,7 @@ const SingleDatePicker = (
         setDateValue(transformMoment(value));
       }
     },
-    [onChange, valueType, valueStatus]
+    [onChange, valueType, timeFormat, valueStatus]
   );
 
   // 不可选择时间回调
@@ -86,19 +105,6 @@ const SingleDatePicker = (
     },
     [disabledDate, selectMode, dateValue, valueStatus]
   );
-
-  // 时、分、秒 format
-  const timeFormat = useMemo(() => {
-    const match = format.match(pattern.TimeFormat);
-
-    console.log(match);
-
-    if (match && Array.isArray(match)) {
-      return match[0];
-    }
-
-    return undefined;
-  }, [format]);
 
   // timePicker 变化回调
   const timePickerChange = useCallback(
