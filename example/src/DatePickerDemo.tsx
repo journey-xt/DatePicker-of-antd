@@ -101,9 +101,51 @@ class DatePickerDemo extends PureComponent<Props, State> {
               {JSON.stringify(getFieldValue("rangeDate4"))}
             </Col>
             <Col span={6}>
-              <Form.Item label="单个时间(带时间)">
+              <Form.Item label="单个时间(带时间) YYYY-MM-DD hh:mm:ss">
                 {getFieldDecorator("singleDateTime")(
                   <SingleDatePicker format="YYYY-MM-DD HH:mm:ss" />
+                )}
+              </Form.Item>
+            </Col>
+            <Col span={6}>
+              <Form.Item label="单个时间(带时间) YYYY-MM-DD kk:mm:ss">
+                {getFieldDecorator("singleDateTime1")(
+                  <SingleDatePicker format="YYYY-MM-DD kk:mm:ss" />
+                )}
+              </Form.Item>
+            </Col>
+            <Col span={6}>
+              <Form.Item label="单个时间(带时间) YYYY-MM-DD HH:mm:ss">
+                {getFieldDecorator("singleDateTime2")(
+                  <SingleDatePicker format="YYYY-MM-DD HH:mm:ss" />
+                )}
+              </Form.Item>
+            </Col>
+            <Col span={6}>
+              <Form.Item label="单个时间(带时间) YYYY-MM-DD hh:mm:ss">
+                {getFieldDecorator("singleDateTime3")(
+                  <SingleDatePicker format="YYYY-MM-DD hh:mm:ss" />
+                )}
+              </Form.Item>
+            </Col>
+            <Col span={6}>
+              <Form.Item label="单个时间(带时间) YYYY-MM-DD h:m:s">
+                {getFieldDecorator("singleDateTime3")(
+                  <SingleDatePicker format="YYYY-MM-DD h:m:s" />
+                )}
+              </Form.Item>
+            </Col>
+            <Col span={6}>
+              <Form.Item label="单个时间(带时间) YYYY-MM-DD k:m:s">
+                {getFieldDecorator("singleDateTime4")(
+                  <SingleDatePicker format="YYYY-MM-DD k:m:s" />
+                )}
+              </Form.Item>
+            </Col>
+            <Col span={6}>
+              <Form.Item label="单个时间(带时间) YYYY-MM-DD k:m">
+                {getFieldDecorator("singleDateTime4")(
+                  <SingleDatePicker format="YYYY-MM-DD k:m" />
                 )}
               </Form.Item>
             </Col>

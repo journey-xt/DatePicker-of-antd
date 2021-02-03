@@ -43,8 +43,6 @@ const SingleDatePicker = (
   const timeFormat = useMemo(() => {
     const match = format.match(pattern.TimeFormat);
 
-    console.log(match);
-
     if (match && Array.isArray(match)) {
       return match[0];
     }

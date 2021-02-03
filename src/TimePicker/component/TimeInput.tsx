@@ -18,12 +18,12 @@ const PackInputNumebr = styled(InputNumber)`
 `;
 
 interface Props {
-  timeType: TimeType;
+  timeType?: TimeType;
   max: number;
   step: number;
   value: number;
   format: string;
-  onChange?: (value: number, type: TimeType) => void;
+  onChange?: (value: number, type?: TimeType) => void;
 }
 
 const TimeInPut = (props: Props) => {

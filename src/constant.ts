@@ -1,12 +1,8 @@
-const HOUR = "HH";
+const HOUR = ["HH", "H", "hh", "h", "kk", "k"];
 
-const MINUTE = "mm";
+const MINUTE = ["mm", "m"];
 
-const SEC = "ss";
-
-const HMS = "HH:mm:ss";
-
-const HM = "HH:mm";
+const SEC = ["ss", "s"];
 
 // 非公务员上班时间段
 const SENIORPERSON = [0, 1, 2, 3, 4, 5, 6, 7, 23];
@@ -17,4 +13,4 @@ const TIMEFORMAT = [
   { format: SEC, des: "秒" }
 ];
 
-export { HOUR, HMS, HM, MINUTE, SEC, SENIORPERSON, TIMEFORMAT };
+export { HOUR, MINUTE, SEC, SENIORPERSON, TIMEFORMAT };

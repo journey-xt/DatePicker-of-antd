@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useMemo, useState } from "react";
 import styled from "styled-components";
 import moment, { Moment } from "moment";
 import TimeInput from "./component/TimeInput";
-import { TimeType, TimeTypeObj } from "./enum";
+import { TimeType } from "./enum";
 import { TIMEFORMAT, HOUR, MINUTE, SEC } from "../constant";
 import { matchTimeFormat, transformMoment } from "../utils";
 
@@ -51,17 +51,8 @@ const TimePicker = (props: Props) => {
       const minute = moment(value).minute();
       const second = moment(value).second();
 
-      switch (timeType) {
-        case MINUTE: // 为分钟的input框的值
-          return {
-            step: minuteStep,
-            max: 60,
-            value: minute,
-            //    disabledTime: disabledMinutes,
-            hour,
-            minute
-          };
-        case SEC: // 为秒的input框的值
+      switch (true) {
+        case SEC.includes(timeType): // 为秒的input框的值
           return {
             step: secondStep,
             max: 60,
@@ -70,7 +61,16 @@ const TimePicker = (props: Props) => {
             hour,
             minute
           };
-        case HOUR: // 为小时的input框的值
+        case MINUTE.includes(timeType): // 为分钟的input框的值
+          return {
+            step: minuteStep,
+            max: 60,
+            value: minute,
+            //    disabledTime: disabledMinutes,
+            hour,
+            minute
+          };
+        case HOUR.includes(timeType): // 为小时的input框的值
         default:
           // 默认为  小时
           return {
@@ -112,24 +112,33 @@ const TimePicker = (props: Props) => {
   const splitSymbol = useMemo(() => {
     const match = matchTimeFormat(format);
     if (match && Array.isArray(match)) {
-      return match[2];
+      return match[3];
     }
     return "";
   }, [format]);
 
   // 后缀
-  const renderSuffix = useCallback(timeType => {
-    const font = TIMEFORMAT.find(item => item.format === timeType);
+  const renderSuffix = useCallback(optionformat => {
+    const font = TIMEFORMAT.find(item => item.format.includes(optionformat));
+
     if (font) {
       return font.des;
     }
     return "-";
   }, []);
 
-  const formatBackTimeType = useCallback(
-    (type: string) => TimeTypeObj[type],
-    []
-  );
+  const formatBackTimeType = useCallback((type: string) => {
+    if (HOUR.includes(type)) {
+      return TimeType.HOUR;
+    }
+    if (MINUTE.includes(type)) {
+      return TimeType.MINUTE;
+    }
+    if (SEC.includes(type)) {
+      return TimeType.SECOND;
+    }
+    return undefined;
+  }, []);
 
   const timeGroup = useMemo(() => format.split(splitSymbol), [splitSymbol]);
 
