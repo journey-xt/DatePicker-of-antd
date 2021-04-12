@@ -159,6 +159,7 @@ const SingleDatePicker = (
   return (
     <PackDataPick
       {...reset}
+      ref={ref}
       open={datePanelOpen}
       format={format}
       value={dateValue}
