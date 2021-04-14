@@ -1,4 +1,3 @@
-/// <reference types="react" />
 interface ITag {
     value: number;
     disabled: boolean;

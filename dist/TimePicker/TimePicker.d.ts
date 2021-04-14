@@ -1,4 +1,3 @@
-/// <reference types="react" />
 import moment, { Moment } from "moment";
 interface Props {
     format: string;

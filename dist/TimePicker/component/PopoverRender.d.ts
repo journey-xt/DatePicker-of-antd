@@ -1,4 +1,3 @@
-/// <reference types="react" />
 interface Props {
     onChange: (tag: number) => void;
     rownum: Array<{

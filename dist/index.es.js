@@ -1,23 +1,23 @@
+import React, { useCallback, useMemo, useRef, useState, useEffect } from 'react';
+import { Tag, InputNumber, Popover, DatePicker, Button, Col, Row } from 'antd';
 import moment from 'moment';
-import { memoize, chunk, get } from 'lodash';
-import React, { useCallback, useMemo, useRef, useEffect, useState } from 'react';
-import styled, { css } from 'styled-components';
-import { Tag, Popover, InputNumber, DatePicker, Button, Col, Row } from 'antd';
 import 'moment/locale/zh-cn';
+import styled, { css } from 'styled-components';
+import { memoize, chunk, get } from 'lodash';
 
 /*! *****************************************************************************
-Copyright (c) Microsoft Corporation. All rights reserved.
-Licensed under the Apache License, Version 2.0 (the "License"); you may not use
-this file except in compliance with the License. You may obtain a copy of the
-License at http://www.apache.org/licenses/LICENSE-2.0
+Copyright (c) Microsoft Corporation.
 
-THIS CODE IS PROVIDED ON AN *AS IS* BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
-KIND, EITHER EXPRESS OR IMPLIED, INCLUDING WITHOUT LIMITATION ANY IMPLIED
-WARRANTIES OR CONDITIONS OF TITLE, FITNESS FOR A PARTICULAR PURPOSE,
-MERCHANTABLITY OR NON-INFRINGEMENT.
+Permission to use, copy, modify, and/or distribute this software for any
+purpose with or without fee is hereby granted.
 
-See the Apache Version 2.0 License for specific language governing permissions
-and limitations under the License.
+THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES WITH
+REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY
+AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY SPECIAL, DIRECT,
+INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM
+LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR
+OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
+PERFORMANCE OF THIS SOFTWARE.
 ***************************************************************************** */
 
 var __assign = function() {
@@ -191,7 +191,6 @@ var TimeInPut = function (props) {
         }
     }, [timeType]);
     var inputChange = useCallback(function (inputNumber) {
-        console.log(inputNumber);
         if (onChange) {
             if ((inputNumber || inputNumber === 0) &&
                 inputNumber >= -1 &&
@@ -217,7 +216,6 @@ var TimeInPut = function (props) {
     //  const inputBlur = useCallback(() => {}, []);
     var inputPressEnter = useCallback(function () {
         if (inputRef && inputRef.current) {
-            console.log(inputRef.current);
             inputRef.current.blur();
         }
     }, []);
@@ -437,7 +435,7 @@ var SingleDatePicker = function (props, ref) {
     useEffect(function () {
         setDateValue(transformMoment(value));
     }, [value]);
-    return (React.createElement(PackDataPick, __assign({}, reset, { open: datePanelOpen, format: format, value: dateValue, defaultPickerValue: defaultValue, onChange: dateChange, disabledDate: disabledTime, onOpenChange: onOpenChange, renderExtraFooter: renderExtraFooter })));
+    return (React.createElement(PackDataPick, __assign({}, reset, { ref: ref, open: datePanelOpen, format: format, value: dateValue, defaultPickerValue: defaultValue, onChange: dateChange, disabledDate: disabledTime, onOpenChange: onOpenChange, renderExtraFooter: renderExtraFooter })));
 };
 var SingleDatePicker$1 = React.forwardRef(SingleDatePicker);
 
@@ -597,5 +595,5 @@ var RangePicker$1 = React.forwardRef(RangePicker);
 moment.locale("zh-cn");
 
 export default SingleDatePicker$1;
-export { RangePicker$1 as RangePicker, ValueType, ValueStatus, SelectMode };
+export { RangePicker$1 as RangePicker, SelectMode, ValueStatus, ValueType };
 //# sourceMappingURL=index.es.js.map

@@ -1,4 +1,3 @@
-/// <reference types="react" />
 import { TimeType } from "../enum";
 interface Props {
     timeType?: TimeType;

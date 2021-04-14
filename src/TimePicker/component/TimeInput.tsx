@@ -43,7 +43,7 @@ const TimeInPut = (props: Props) => {
 
   const inputChange = useCallback(
     (inputNumber: number | undefined) => {
-      // console.log(inputNumber);
+      console.log(inputNumber);
       if (onChange) {
         if (
           (inputNumber || inputNumber === 0) &&
@@ -79,7 +79,7 @@ const TimeInPut = (props: Props) => {
 
   const inputPressEnter = useCallback(() => {
     if (inputRef && inputRef.current) {
-      //   console.log(inputRef.current);
+      console.log(inputRef.current);
       inputRef.current.blur();
     }
   }, []);
