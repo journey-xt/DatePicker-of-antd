@@ -13,12 +13,10 @@ const afterCss = css`
   width: 24px;
 `;
 
+// @ts-ignore
 const PackDataPick = styled(DatePicker)<{ showElement?: boolean }>`
   position: relative;
   width: 100%;
-  & .ant-input {
-    //  border: 1px solid transparent;
-  }
   &:after {
     ${props => (props.showElement ? afterCss : "")}
   }

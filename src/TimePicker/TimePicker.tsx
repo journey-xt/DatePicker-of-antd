@@ -15,7 +15,7 @@ interface Props {
   hourStep?: number;
   minuteStep?: number;
   secondStep?: number;
-  value?: string | number | Moment | Date;
+  value?: string | number | Moment | null;
   disabledHours?: () => Array<number>;
   disabledMinutes?: () => Array<number>;
   disabledSeconds?: () => Array<number>;
@@ -99,6 +99,8 @@ const TimePicker = (props: Props) => {
   const timeChange = useCallback(
     (value: number, type: TimeType) => {
       const changeMoment = moment(time).set(type, value);
+
+      // 注释信息
       if (onChange) {
         onChange(changeMoment);
       } else {

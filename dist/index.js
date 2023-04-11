@@ -5,8 +5,8 @@ Object.defineProperty(exports, '__esModule', { value: true });
 var React = require('react');
 var antd = require('antd');
 var moment = require('moment');
-require('moment/locale/zh-cn');
 var styled = require('styled-components');
+require('moment/locale/zh-cn');
 var lodash = require('lodash');
 
 function _interopDefaultLegacy (e) { return e && typeof e === 'object' && 'default' in e ? e : { 'default': e }; }
@@ -160,6 +160,7 @@ var computeTag = function (max, step) {
     return array;
 };
 
+// @ts-ignore
 var PackLayoutTag = styled__default['default'](antd.Tag.CheckableTag)(templateObject_1 || (templateObject_1 = __makeTemplateObject(["\n  margin-bottom: 5px !important;\n  background-color: ", ";\n  cursor: ", "!important;\n"], ["\n  margin-bottom: 5px !important;\n  background-color: ", ";\n  cursor: ", "!important;\n"])), function (props) { return props.disabled && "#f5f5f5 !important"; }, function (props) { return (props.disabled ? "not-allowed" : "pointer"); });
 var PackTag = function (props) {
     var onChange = props.onChange, tags = props.tags, disabled = props.disabled, checked = props.checked, children = props.children;
@@ -186,6 +187,7 @@ var PopoverRender = function (props) {
 };
 var templateObject_1$1, templateObject_2;
 
+// @ts-ignore
 var PackInputNumebr = styled__default['default'](antd.InputNumber)(templateObject_1$2 || (templateObject_1$2 = __makeTemplateObject(["\n  &.ant-input-number {\n    display: inline-block;\n    min-height: 38px;\n    width: 50px;\n    padding: 4px 0px;\n  }\n  & .ant-input-number-input {\n    width: 50px;\n  }\n"], ["\n  &.ant-input-number {\n    display: inline-block;\n    min-height: 38px;\n    width: 50px;\n    padding: 4px 0px;\n  }\n  & .ant-input-number-input {\n    width: 50px;\n  }\n"])));
 var TimeInPut = function (props) {
     var timeType = props.timeType, value = props.value, format = props.format, max = props.max, step = props.step, onChange = props.onChange, reset = __rest(props, ["timeType", "value", "format", "max", "step", "onChange"]);
@@ -195,7 +197,7 @@ var TimeInPut = function (props) {
         if (onChange) {
             onChange(tag || 0, timeType);
         }
-    }, [timeType]);
+    }, [onChange, timeType]);
     var inputChange = React.useCallback(function (inputNumber) {
         if (onChange) {
             if ((inputNumber || inputNumber === 0) &&
@@ -303,6 +305,7 @@ var TimePicker = function (props) {
     // 时间变化回调
     var timeChange = React.useCallback(function (value, type) {
         var changeMoment = moment__default['default'](time).set(type, value);
+        // 注释信息
         if (onChange) {
             onChange(changeMoment);
         }
@@ -349,17 +352,19 @@ var TimePicker = function (props) {
 var templateObject_1$3;
 
 var afterCss = styled.css(templateObject_1$4 || (templateObject_1$4 = __makeTemplateObject(["\n  content: \"~\";\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  position: absolute;\n  right: -24px;\n  top: 0;\n  height: 100%;\n  width: 24px;\n"], ["\n  content: \"~\";\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  position: absolute;\n  right: -24px;\n  top: 0;\n  height: 100%;\n  width: 24px;\n"])));
-var PackDataPick = styled__default['default'](antd.DatePicker)(templateObject_2$1 || (templateObject_2$1 = __makeTemplateObject(["\n  position: relative;\n  width: 100%;\n  & .ant-input {\n    //  border: 1px solid transparent;\n  }\n  &:after {\n    ", "\n  }\n"], ["\n  position: relative;\n  width: 100%;\n  & .ant-input {\n    //  border: 1px solid transparent;\n  }\n  &:after {\n    ", "\n  }\n"])), function (props) { return (props.showElement ? afterCss : ""); });
+// @ts-ignore
+var PackDataPick = styled__default['default'](antd.DatePicker)(templateObject_2$1 || (templateObject_2$1 = __makeTemplateObject(["\n  position: relative;\n  width: 100%;\n  &:after {\n    ", "\n  }\n"], ["\n  position: relative;\n  width: 100%;\n  &:after {\n    ", "\n  }\n"])), function (props) { return (props.showElement ? afterCss : ""); });
 var RenderTimeWarp = styled__default['default'].div(templateObject_3 || (templateObject_3 = __makeTemplateObject(["\n  padding-right: 50px;\n  position: relative;\n  .ant-btn {\n    position: absolute;\n    right: 0;\n    top: 50%;\n    margin-top: -12px;\n  }\n"], ["\n  padding-right: 50px;\n  position: relative;\n  .ant-btn {\n    position: absolute;\n    right: 0;\n    top: 50%;\n    margin-top: -12px;\n  }\n"])));
 var templateObject_1$4, templateObject_2$1, templateObject_3;
 
 moment__default['default'].locale("zh-cn");
 var SingleDatePicker = function (props, ref) {
-    var _a = props.format, format = _a === void 0 ? "YYYY-MM-DD" : _a, _b = props.valueStatus, valueStatus = _b === void 0 ? exports.ValueStatus.None : _b, _c = props.valueType, valueType = _c === void 0 ? exports.ValueType.TimeStamp : _c, value = props.value, defaultPickerValue = props.defaultPickerValue, onChange = props.onChange, disabledDate = props.disabledDate, selectMode = props.selectMode, _d = props.open, open = _d === void 0 ? false : _d, upOnOpenChange = props.onOpenChange, reset = __rest(props, ["format", "valueStatus", "valueType", "value", "defaultPickerValue", "onChange", "disabledDate", "selectMode", "open", "onOpenChange"]);
-    var _e = React.useState(transformMoment(value)), dateValue = _e[0], setDateValue = _e[1];
-    var _f = React.useState(defaultPickerValue), defaultValue = _f[0], setDefaultValue = _f[1];
+    var _a;
+    var _b = props.format, format = _b === void 0 ? "YYYY-MM-DD" : _b, _c = props.valueStatus, valueStatus = _c === void 0 ? exports.ValueStatus.None : _c, _d = props.valueType, valueType = _d === void 0 ? exports.ValueType.TimeStamp : _d, value = props.value, defaultPickerValue = props.defaultPickerValue, onChange = props.onChange, disabledDate = props.disabledDate, selectMode = props.selectMode, _e = props.open, open = _e === void 0 ? false : _e, upOnOpenChange = props.onOpenChange, reset = __rest(props, ["format", "valueStatus", "valueType", "value", "defaultPickerValue", "onChange", "disabledDate", "selectMode", "open", "onOpenChange"]);
+    var _f = React.useState(transformMoment(value)), dateValue = _f[0], setDateValue = _f[1];
+    var _g = React.useState(defaultPickerValue), defaultValue = _g[0], setDefaultValue = _g[1];
     // 面板 open
-    var _g = React.useState(open), datePanelOpen = _g[0], setDatePanelOpen = _g[1];
+    var _h = React.useState(open), datePanelOpen = _h[0], setDatePanelOpen = _h[1];
     // 时、分、秒 format
     var timeFormat = React.useMemo(function () {
         var match = format.match(pattern.TimeFormat);
@@ -441,11 +446,16 @@ var SingleDatePicker = function (props, ref) {
     React.useEffect(function () {
         setDateValue(transformMoment(value));
     }, [value]);
-    return (React__default['default'].createElement(PackDataPick, __assign({}, reset, { ref: ref, open: datePanelOpen, format: format, value: dateValue, defaultPickerValue: defaultValue, onChange: dateChange, disabledDate: disabledTime, onOpenChange: onOpenChange, renderExtraFooter: renderExtraFooter })));
+    return (
+    // @ts-ignore
+    React__default['default'].createElement(styled.StyleSheetManager, { target: (_a = window.top) === null || _a === void 0 ? void 0 : _a.document.head },
+        React__default['default'].createElement(PackDataPick, __assign({}, reset, { ref: ref, open: datePanelOpen, format: format, value: dateValue, defaultPickerValue: defaultValue, onChange: dateChange, disabledDate: disabledTime, onOpenChange: onOpenChange, renderExtraFooter: renderExtraFooter }))));
 };
 var SingleDatePicker$1 = React__default['default'].forwardRef(SingleDatePicker);
 
+// @ts-ignore
 var LayoutLeftCol = styled__default['default'](antd.Col)(templateObject_1$5 || (templateObject_1$5 = __makeTemplateObject(["\n  position: relative;\n"], ["\n  position: relative;\n"])));
+// @ts-ignore
 var LayoutRightCol = styled__default['default'](antd.Col)(templateObject_2$2 || (templateObject_2$2 = __makeTemplateObject(["\n  position: relative;\n"], ["\n  position: relative;\n"])));
 var templateObject_1$5, templateObject_2$2;
 
@@ -465,8 +475,9 @@ var FormatDefault;
 
 var RangePicker = function (props, ref) {
     var _a;
-    var id = props.id, name = props.name, format = props.format, onChange = props.onChange, value = props.value, disabledDate = props.disabledDate, selectMode = props.selectMode, placeholder = props.placeholder, _b = props.valueType, valueType = _b === void 0 ? exports.ValueType.TimeStamp : _b, reset = __rest(props, ["id", "name", "format", "onChange", "value", "disabledDate", "selectMode", "placeholder", "valueType"]);
-    var _c = React.useMemo(function () {
+    var _b;
+    var id = props.id, name = props.name, format = props.format, onChange = props.onChange, value = props.value, disabledDate = props.disabledDate, selectMode = props.selectMode, placeholder = props.placeholder, _c = props.valueType, valueType = _c === void 0 ? exports.ValueType.TimeStamp : _c, reset = __rest(props, ["id", "name", "format", "onChange", "value", "disabledDate", "selectMode", "placeholder", "valueType"]);
+    var _d = React.useMemo(function () {
         if (placeholder && Array.isArray(placeholder)) {
             return [
                 placeholder[0] || Placeholder.START,
@@ -477,8 +488,8 @@ var RangePicker = function (props, ref) {
             return [placeholder || Placeholder.START, placeholder || Placeholder.END];
         }
         return [Placeholder.START, Placeholder.END];
-    }, [placeholder]), startPlaceholder = _c[0], endPlaceholder = _c[1];
-    var _d = React.useMemo(function () {
+    }, [placeholder]), startPlaceholder = _d[0], endPlaceholder = _d[1];
+    var _e = React.useMemo(function () {
         if (typeof format === "string") {
             return [format, format];
         }
@@ -486,11 +497,11 @@ var RangePicker = function (props, ref) {
             return format;
         }
         return [FormatDefault.FORMAT_DEFAULT, FormatDefault.FORMAT_DEFAULT];
-    }, [format]), startFormat = _d[0], endFormat = _d[1];
-    var _e = React.useState((_a = {},
+    }, [format]), startFormat = _e[0], endFormat = _e[1];
+    var _f = React.useState((_a = {},
         _a[exports.ValueStatus.Start] = undefined,
         _a[exports.ValueStatus.End] = undefined,
-        _a)), RangeValue = _e[0], setRangeValue = _e[1];
+        _a)), RangeValue = _f[0], setRangeValue = _f[1];
     // 时间变化回调
     var rangeChange = React.useCallback(function (value, valueStatus) {
         var _a, _b, _c;
@@ -585,16 +596,19 @@ var RangePicker = function (props, ref) {
             _a[exports.ValueStatus.End] = lodash.get(value, exports.ValueStatus.End, undefined),
             _a));
     }, [setRangeValue, value]);
-    return (React__default['default'].createElement("span", __assign({}, (id ? { id: "" + id } : {}), (name ? { name: name } : {})),
-        React__default['default'].createElement(antd.Row, { gutter: 24 },
-            React__default['default'].createElement(LayoutLeftCol, { span: 12 },
-                React__default['default'].createElement(SingleDatePicker$1, __assign({}, reset, { showElement: true, format: startFormat, value: RangeValue[exports.ValueStatus.Start], valueStatus: exports.ValueStatus.Start, disabledDate: rangeDisabledDate, onChange: rangeChange, placeholder: startPlaceholder, defaultPickerValue: RangeValue[exports.ValueStatus.Start]
-                        ? moment__default['default'](RangeValue[exports.ValueStatus.Start])
-                        : undefined }))),
-            React__default['default'].createElement(LayoutRightCol, { span: 12 },
-                React__default['default'].createElement(SingleDatePicker$1, __assign({}, reset, { format: endFormat, value: RangeValue[exports.ValueStatus.End], valueStatus: exports.ValueStatus.End, disabledDate: rangeDisabledDate, onChange: rangeChange, placeholder: endPlaceholder, defaultPickerValue: RangeValue[exports.ValueStatus.Start]
-                        ? moment__default['default'](RangeValue[exports.ValueStatus.Start])
-                        : undefined }))))));
+    return (
+    // @ts-ignore
+    React__default['default'].createElement(styled.StyleSheetManager, { target: (_b = window.top) === null || _b === void 0 ? void 0 : _b.document.head },
+        React__default['default'].createElement("span", __assign({}, (id ? { id: "" + id } : {}), (name ? { name: name } : {})),
+            React__default['default'].createElement(antd.Row, { gutter: 24 },
+                React__default['default'].createElement(LayoutLeftCol, { span: 12 },
+                    React__default['default'].createElement(SingleDatePicker$1, __assign({}, reset, { showElement: true, format: startFormat, value: RangeValue[exports.ValueStatus.Start], valueStatus: exports.ValueStatus.Start, disabledDate: rangeDisabledDate, onChange: rangeChange, placeholder: startPlaceholder, defaultPickerValue: RangeValue[exports.ValueStatus.Start]
+                            ? moment__default['default'](RangeValue[exports.ValueStatus.Start])
+                            : undefined }))),
+                React__default['default'].createElement(LayoutRightCol, { span: 12 },
+                    React__default['default'].createElement(SingleDatePicker$1, __assign({}, reset, { format: endFormat, value: RangeValue[exports.ValueStatus.End], valueStatus: exports.ValueStatus.End, disabledDate: rangeDisabledDate, onChange: rangeChange, placeholder: endPlaceholder, defaultPickerValue: RangeValue[exports.ValueStatus.Start]
+                            ? moment__default['default'](RangeValue[exports.ValueStatus.Start])
+                            : undefined })))))));
 };
 var RangePicker$1 = React__default['default'].forwardRef(RangePicker);
 

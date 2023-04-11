@@ -7,7 +7,7 @@ import "moment/locale/zh-cn";
 
 moment.locale("en");
 
-const App: React.FC = () => (
+const App = () => (
   <ConfigProvider autoInsertSpaceInButton locale={zhCN}>
     <DatePickerDemo />
   </ConfigProvider>

@@ -1,6 +1,7 @@
 import React, { useCallback, useState, useEffect, useMemo } from "react";
 import { Button } from "antd";
 import moment from "moment";
+import { StyleSheetManager } from "styled-components";
 import "moment/locale/zh-cn";
 import TimePicker from "../TimePicker";
 import { transformMoment, transformTimeStamp } from "../utils";
@@ -157,19 +158,22 @@ const SingleDatePicker = (
   }, [value]);
 
   return (
-    <PackDataPick
-      {...reset}
-      ref={ref}
-      open={datePanelOpen}
-      format={format}
-      value={dateValue}
-      defaultPickerValue={defaultValue}
-      onChange={dateChange}
-      disabledDate={disabledTime}
-      onOpenChange={onOpenChange}
-      renderExtraFooter={renderExtraFooter}
-    />
+    // @ts-ignore
+    <StyleSheetManager target={window.top?.document.head}>
+      <PackDataPick
+        {...reset}
+        ref={ref}
+        open={datePanelOpen}
+        format={format}
+        value={dateValue}
+        defaultPickerValue={defaultValue}
+        onChange={dateChange}
+        disabledDate={disabledTime}
+        onOpenChange={onOpenChange}
+        renderExtraFooter={renderExtraFooter}
+      />
+    </StyleSheetManager>
   );
 };
 
-export default React.forwardRef<any, SingleDatePickerProps>(SingleDatePicker);
+export default React.forwardRef<any, any>(SingleDatePicker);

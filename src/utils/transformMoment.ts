@@ -4,7 +4,7 @@ import moment from "moment";
  * 传入 一个 时间 格式的 字符串 或者 时间戳  转换为momnet
  */
 const transformMoment = (
-  date?: string | number | moment.Moment | Date
+  date?: string | number | moment.Moment | null
 ): moment.Moment | undefined => {
   if (!date) {
     return undefined;

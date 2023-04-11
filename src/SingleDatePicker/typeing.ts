@@ -12,7 +12,7 @@ export interface SingleDatePickerProps
   > {
   format?: string;
   valueStatus?: ValueStatus;
-  value?: string | number | Moment | Date;
+  value?: string | number | Moment;
   disabledDate?: (
     currentDate: Moment | undefined,
     valueStatus?: ValueStatus

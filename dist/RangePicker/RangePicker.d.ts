@@ -1,4 +1,3 @@
 import React from "react";
-import { RangePickerProps } from "./typeing";
-declare const _default: React.ForwardRefExoticComponent<RangePickerProps & React.RefAttributes<any>>;
+declare const _default: React.ForwardRefExoticComponent<Pick<any, string | number | symbol> & React.RefAttributes<any>>;
 export default _default;

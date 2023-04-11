@@ -1,4 +1,3 @@
-import { Col } from "antd";
-declare const LayoutLeftCol: import("styled-components").StyledComponent<typeof Col, any, {}, never>;
-declare const LayoutRightCol: import("styled-components").StyledComponent<typeof Col, any, {}, never>;
+declare const LayoutLeftCol: import("styled-components").StyledComponent<any, any, any, any>;
+declare const LayoutRightCol: import("styled-components").StyledComponent<any, any, any, any>;
 export { LayoutLeftCol, LayoutRightCol };

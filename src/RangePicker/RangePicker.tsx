@@ -2,6 +2,7 @@ import React, { useState, useCallback, useEffect, useMemo } from "react";
 import { get } from "lodash";
 import { Row } from "antd";
 import moment from "moment";
+import { StyleSheetManager } from "styled-components";
 import { LayoutLeftCol, LayoutRightCol } from "./styled";
 
 // 声明文件
@@ -180,44 +181,47 @@ const RangePicker = (props: RangePickerProps, ref: React.Ref<any>) => {
   }, [setRangeValue, value]);
 
   return (
-    <span {...(id ? { id: `${id}` } : {})} {...(name ? { name } : {})}>
-      <Row gutter={24}>
-        <LayoutLeftCol span={12}>
-          <SingleDatePicker
-            {...reset}
-            showElement
-            format={startFormat}
-            value={RangeValue[ValueStatus.Start]}
-            valueStatus={ValueStatus.Start}
-            disabledDate={rangeDisabledDate}
-            onChange={rangeChange}
-            placeholder={startPlaceholder}
-            defaultPickerValue={
-              RangeValue[ValueStatus.Start]
-                ? moment(RangeValue[ValueStatus.Start])
-                : undefined
-            }
-          />
-        </LayoutLeftCol>
-        <LayoutRightCol span={12}>
-          <SingleDatePicker
-            {...reset}
-            format={endFormat}
-            value={RangeValue[ValueStatus.End]}
-            valueStatus={ValueStatus.End}
-            disabledDate={rangeDisabledDate}
-            onChange={rangeChange}
-            placeholder={endPlaceholder}
-            defaultPickerValue={
-              RangeValue[ValueStatus.Start]
-                ? moment(RangeValue[ValueStatus.Start])
-                : undefined
-            }
-          />
-        </LayoutRightCol>
-      </Row>
-    </span>
+    // @ts-ignore
+    <StyleSheetManager target={window.top?.document.head}>
+      <span {...(id ? { id: `${id}` } : {})} {...(name ? { name } : {})}>
+        <Row gutter={24}>
+          <LayoutLeftCol span={12}>
+            <SingleDatePicker
+              {...reset}
+              showElement
+              format={startFormat}
+              value={RangeValue[ValueStatus.Start]}
+              valueStatus={ValueStatus.Start}
+              disabledDate={rangeDisabledDate}
+              onChange={rangeChange}
+              placeholder={startPlaceholder}
+              defaultPickerValue={
+                RangeValue[ValueStatus.Start]
+                  ? moment(RangeValue[ValueStatus.Start])
+                  : undefined
+              }
+            />
+          </LayoutLeftCol>
+          <LayoutRightCol span={12}>
+            <SingleDatePicker
+              {...reset}
+              format={endFormat}
+              value={RangeValue[ValueStatus.End]}
+              valueStatus={ValueStatus.End}
+              disabledDate={rangeDisabledDate}
+              onChange={rangeChange}
+              placeholder={endPlaceholder}
+              defaultPickerValue={
+                RangeValue[ValueStatus.Start]
+                  ? moment(RangeValue[ValueStatus.Start])
+                  : undefined
+              }
+            />
+          </LayoutRightCol>
+        </Row>
+      </span>
+    </StyleSheetManager>
   );
 };
 
-export default React.forwardRef<any, RangePickerProps>(RangePicker);
+export default React.forwardRef<any, any>(RangePicker);

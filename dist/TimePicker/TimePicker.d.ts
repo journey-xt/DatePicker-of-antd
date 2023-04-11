@@ -4,7 +4,7 @@ interface Props {
     hourStep?: number;
     minuteStep?: number;
     secondStep?: number;
-    value?: string | number | Moment | Date;
+    value?: string | number | Moment | null;
     disabledHours?: () => Array<number>;
     disabledMinutes?: () => Array<number>;
     disabledSeconds?: () => Array<number>;

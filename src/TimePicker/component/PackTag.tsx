@@ -2,6 +2,7 @@ import React, { useCallback } from "react";
 import styled from "styled-components";
 import { Tag } from "antd";
 
+// @ts-ignore
 const PackLayoutTag = styled(Tag.CheckableTag)<{ disabled: boolean }>`
   margin-bottom: 5px !important;
   background-color: ${props => props.disabled && "#f5f5f5 !important"};

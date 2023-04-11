@@ -5,6 +5,7 @@ import { TimeType } from "../enum";
 import PopoverRender from "./PopoverRender";
 import { computeTag } from "../../utils";
 
+// @ts-ignore
 const PackInputNumebr = styled(InputNumber)`
   &.ant-input-number {
     display: inline-block;
@@ -38,12 +39,11 @@ const TimeInPut = (props: Props) => {
         onChange(tag || 0, timeType);
       }
     },
-    [timeType]
+    [onChange, timeType]
   );
 
   const inputChange = useCallback(
     (inputNumber: number | undefined) => {
-      console.log(inputNumber);
       if (onChange) {
         if (
           (inputNumber || inputNumber === 0) &&
@@ -79,7 +79,6 @@ const TimeInPut = (props: Props) => {
 
   const inputPressEnter = useCallback(() => {
     if (inputRef && inputRef.current) {
-      console.log(inputRef.current);
       inputRef.current.blur();
     }
   }, []);

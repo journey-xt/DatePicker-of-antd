@@ -42,8 +42,8 @@ export default {
     //   exclude: "node_modules/**"
     // }),
     commonjs(),
-    strip({
-      include: "**/*.(ts|tsx)"
-    })
+    // strip({
+    //   include: "**/*.(ts|tsx)"
+    // })
   ]
 };
