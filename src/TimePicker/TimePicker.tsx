@@ -16,9 +16,7 @@ interface Props {
   minuteStep?: number;
   secondStep?: number;
   value?: string | number | Moment | null;
-  disabledHours?: () => Array<number>;
-  disabledMinutes?: () => Array<number>;
-  disabledSeconds?: () => Array<number>;
+  disabledDate?: Moment;
   onChange?: (date: moment.Moment) => void;
 }
 
@@ -38,12 +36,12 @@ const TimePicker = (props: Props) => {
     hourStep = 1,
     minuteStep = 5,
     secondStep = 10,
-    disabledHours,
-    disabledMinutes,
-    disabledSeconds
+    disabledDate
   } = props;
 
-  const [time, setTime] = useState<moment.Moment | undefined>(moment(value));
+  const [time, setTime] = useState<moment.Moment | undefined>(
+    transformMoment(value, `YYYY-MM-DD ${format}`)
+  );
 
   const timeItemProps: (timeType: string) => Step = useCallback(
     (timeType: string) => {
@@ -57,7 +55,7 @@ const TimePicker = (props: Props) => {
             step: secondStep,
             max: 60,
             value: second,
-            //    disabledTime: disabledSeconds,
+            disabledDate,
             hour,
             minute
           };
@@ -66,7 +64,7 @@ const TimePicker = (props: Props) => {
             step: minuteStep,
             max: 60,
             value: minute,
-            //    disabledTime: disabledMinutes,
+            disabledDate,
             hour,
             minute
           };
@@ -77,30 +75,19 @@ const TimePicker = (props: Props) => {
             step: hourStep,
             max: 24,
             value: hour,
-            //      disabledTime: disabledHours,
+            disabledDate,
             hour,
             minute
           };
       }
     },
-    [
-      format,
-      value,
-      hourStep,
-      minuteStep,
-      secondStep,
-      disabledHours,
-      disabledMinutes,
-      disabledSeconds
-    ]
+    [format, value, hourStep, minuteStep, secondStep, disabledDate]
   );
 
   // 时间变化回调
   const timeChange = useCallback(
     (value: number, type: TimeType) => {
       const changeMoment = moment(time).set(type, value);
-
-      // 注释信息
       if (onChange) {
         onChange(changeMoment);
       } else {
@@ -145,8 +132,8 @@ const TimePicker = (props: Props) => {
   const timeGroup = useMemo(() => format.split(splitSymbol), [splitSymbol]);
 
   useEffect(() => {
-    setTime(transformMoment(value) || moment());
-  }, [value, setTime]);
+    setTime(transformMoment(value, `YYYY-MM-DD ${format}`));
+  }, [value, setTime, format]);
 
   return (
     <Warp>
@@ -154,6 +141,7 @@ const TimePicker = (props: Props) => {
         <span key={item}>
           <TimeInput
             format={item}
+            time={time}
             timeType={formatBackTimeType(item)}
             onChange={timeChange}
             {...timeItemProps(item)}

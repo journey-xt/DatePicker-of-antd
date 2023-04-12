@@ -1,6 +1,11 @@
 import React from "react";
 import { Form, Layout, Row, Col } from "antd";
-import SingleDatePicker, { RangePicker, SelectMode } from "datepicker-of-antd";
+import moment from "moment";
+import SingleDatePicker, {
+  RangePicker,
+  SelectMode,
+  ValueType
+} from "datepicker-of-antd";
 import "antd/dist/antd.css";
 
 const DatePickerDemo = props => {
@@ -11,7 +16,7 @@ const DatePickerDemo = props => {
   return (
     <Layout style={{ padding: 20 }}>
       <Form>
-        <Row gutter={24}>
+        <Row gutter={24} type="flex">
           <Col span={6}>
             <Form.Item label="单个时间">
               {getFieldDecorator("singleDate")(<SingleDatePicker />)}
@@ -94,6 +99,7 @@ const DatePickerDemo = props => {
                 <SingleDatePicker format="YYYY-MM-DD HH:mm:ss" />
               )}
             </Form.Item>
+            {JSON.stringify(getFieldValue("singleDateTime"))}
           </Col>
           <Col span={6}>
             <Form.Item label="单个时间(带时间) YYYY-MM-DD kk:mm:ss">
@@ -101,6 +107,7 @@ const DatePickerDemo = props => {
                 <SingleDatePicker format="YYYY-MM-DD kk:mm:ss" />
               )}
             </Form.Item>
+            {JSON.stringify(getFieldValue("singleDateTime1"))}
           </Col>
           <Col span={6}>
             <Form.Item label="单个时间(带时间) YYYY-MM-DD HH:mm:ss">
@@ -108,6 +115,7 @@ const DatePickerDemo = props => {
                 <SingleDatePicker format="YYYY-MM-DD HH:mm:ss" />
               )}
             </Form.Item>
+            {JSON.stringify(getFieldValue("singleDateTime2"))}
           </Col>
           <Col span={6}>
             <Form.Item label="单个时间(带时间) YYYY-MM-DD hh:mm:ss">
@@ -115,27 +123,41 @@ const DatePickerDemo = props => {
                 <SingleDatePicker format="YYYY-MM-DD hh:mm:ss" />
               )}
             </Form.Item>
+            {JSON.stringify(getFieldValue("singleDateTime3"))}
           </Col>
           <Col span={6}>
-            <Form.Item label="单个时间(带时间) YYYY-MM-DD h:m:s">
-              {getFieldDecorator("singleDateTime3")(
-                <SingleDatePicker format="YYYY-MM-DD h:m:s" />
-              )}
-            </Form.Item>
-          </Col>
-          <Col span={6}>
-            <Form.Item label="单个时间(带时间) YYYY-MM-DD k:m:s">
+            <Form.Item label="单个时间(带时间) YYYY-MM-DD h:m:s 字符串值">
               {getFieldDecorator("singleDateTime4")(
-                <SingleDatePicker format="YYYY-MM-DD k:m:s" />
+                <SingleDatePicker
+                  format="YYYY-MM-DD h:m:s"
+                  valueType={ValueType.TimeString}
+                />
               )}
             </Form.Item>
+            {JSON.stringify(getFieldValue("singleDateTime4"))}
+          </Col>
+          <Col span={6}>
+            <Form.Item label="单个时间(带时间) YYYY-MM-DD HH:00:00">
+              {getFieldDecorator("singleDateTime5")(
+                <SingleDatePicker format="YYYY-MM-DD HH:00:00" />
+              )}
+            </Form.Item>
+            {JSON.stringify(getFieldValue("singleDateTime5"))}
           </Col>
           <Col span={6}>
             <Form.Item label="单个时间(带时间) YYYY-MM-DD H:m">
-              {getFieldDecorator("singleDateTime4")(
+              {getFieldDecorator("singleDateTime6")(
                 <SingleDatePicker format="YYYY-MM-DD H:m" />
               )}
             </Form.Item>
+            <div>{JSON.stringify(getFieldValue("singleDateTime6"))}</div>
+            <div>
+              {JSON.stringify(
+                moment(getFieldValue("singleDateTime6")).format(
+                  "YYYY-MM-DD HH:mm:ss"
+                )
+              )}
+            </div>
           </Col>
           <Col span={6}>
             <Form.Item label="联级时间">
@@ -143,6 +165,7 @@ const DatePickerDemo = props => {
                 <RangePicker format="YYYY-MM-DD HH:mm:ss" />
               )}
             </Form.Item>
+            {JSON.stringify(getFieldValue("rangeDateTime"))}
           </Col>
         </Row>
       </Form>

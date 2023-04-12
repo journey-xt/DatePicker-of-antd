@@ -2,7 +2,6 @@ import React, { useState, useCallback, useEffect, useMemo } from "react";
 import { get } from "lodash";
 import { Row } from "antd";
 import moment from "moment";
-import { StyleSheetManager } from "styled-components";
 import { LayoutLeftCol, LayoutRightCol } from "./styled";
 
 // 声明文件
@@ -10,14 +9,10 @@ import { Moment } from "moment/moment";
 import { RangePickerValue, RangePickerProps } from "./typeing";
 import { Placeholder } from "../enum/Placeholder.enum";
 import { FormatDefault } from "../enum/FormatDefault.enum";
-
+import { ValueStatus } from "./enum";
+import { ValueType } from "../enum/ValueType.enum";
 // 组件引用
-import SingleDatePicker, {
-  ValueStatus,
-  ValueType,
-  PickerValue,
-  SelectMode
-} from "../SingleDatePicker";
+import SingleDatePicker, { PickerValue, SelectMode } from "../SingleDatePicker";
 
 const RangePicker = (props: RangePickerProps, ref: React.Ref<any>) => {
   const {
@@ -63,32 +58,22 @@ const RangePicker = (props: RangePickerProps, ref: React.Ref<any>) => {
 
   // 时间变化回调
   const rangeChange = useCallback(
-    (value?: PickerValue, valueStatus?: ValueStatus) => {
+    (valueStatus: ValueStatus, value?: PickerValue) => {
       if (onChange) {
         onChange(
-          value ||
-            RangeValue[
-              valueStatus === ValueStatus.Start
-                ? ValueStatus.End
-                : ValueStatus.Start
-            ]
+          value || RangeValue[valueStatus]
             ? {
                 ...RangeValue,
-                ...(valueStatus ? { [valueStatus]: value } : {})
+                [valueStatus]: value
               }
             : undefined
         );
       } else {
         setRangeValue(
-          value ||
-            RangeValue[
-              valueStatus === ValueStatus.Start
-                ? ValueStatus.End
-                : ValueStatus.Start
-            ]
+          value || RangeValue[valueStatus]
             ? {
                 ...RangeValue,
-                ...(valueStatus ? { [valueStatus]: value } : {})
+                [valueStatus]: value
               }
             : {
                 [ValueStatus.Start]: undefined,
@@ -100,9 +85,25 @@ const RangePicker = (props: RangePickerProps, ref: React.Ref<any>) => {
     [onChange, RangeValue]
   );
 
+  // 开始时间变化回调
+  const startDateChange = useCallback(
+    (value?: PickerValue) => {
+      rangeChange(ValueStatus.Start, value);
+    },
+    [rangeChange]
+  );
+
+  // 结束时间变化回调
+  const endDateChange = useCallback(
+    (value?: PickerValue) => {
+      rangeChange(ValueStatus.End, value);
+    },
+    [rangeChange]
+  );
+
   // 不可选择时间回调
   const rangeDisabledDate = useCallback(
-    (currentDate: Moment | undefined, valueStatus?: ValueStatus) => {
+    (currentDate: Moment | undefined, valueStatus: ValueStatus) => {
       // 上层 不可选择时间段 回调
       if (disabledDate) {
         return disabledDate(currentDate, valueStatus);
@@ -172,55 +173,66 @@ const RangePicker = (props: RangePickerProps, ref: React.Ref<any>) => {
     [RangeValue, disabledDate]
   );
 
+  // 开始时间变化回调
+  const startDateDisabledDate = useCallback(
+    (currentDate: Moment | undefined) =>
+      rangeDisabledDate(currentDate, ValueStatus.Start),
+    [rangeDisabledDate]
+  );
+
+  // 结束时间变化回调
+  const endDateDisabledDate = useCallback(
+    (currentDate: Moment | undefined) =>
+      rangeDisabledDate(currentDate, ValueStatus.End),
+    [rangeDisabledDate]
+  );
+
   // 上层porps变化
   useEffect(() => {
     setRangeValue({
-      [ValueStatus.Start]: get(value, ValueStatus.Start, undefined),
-      [ValueStatus.End]: get(value, ValueStatus.End, undefined)
+      [ValueStatus.Start]: get(value, ValueStatus.Start),
+      [ValueStatus.End]: get(value, ValueStatus.End)
     });
   }, [setRangeValue, value]);
 
   return (
-    // @ts-ignore
-    <StyleSheetManager target={window.top?.document.head}>
-      <span {...(id ? { id: `${id}` } : {})} {...(name ? { name } : {})}>
-        <Row gutter={24}>
-          <LayoutLeftCol span={12}>
-            <SingleDatePicker
-              {...reset}
-              showElement
-              format={startFormat}
-              value={RangeValue[ValueStatus.Start]}
-              valueStatus={ValueStatus.Start}
-              disabledDate={rangeDisabledDate}
-              onChange={rangeChange}
-              placeholder={startPlaceholder}
-              defaultPickerValue={
-                RangeValue[ValueStatus.Start]
-                  ? moment(RangeValue[ValueStatus.Start])
-                  : undefined
-              }
-            />
-          </LayoutLeftCol>
-          <LayoutRightCol span={12}>
-            <SingleDatePicker
-              {...reset}
-              format={endFormat}
-              value={RangeValue[ValueStatus.End]}
-              valueStatus={ValueStatus.End}
-              disabledDate={rangeDisabledDate}
-              onChange={rangeChange}
-              placeholder={endPlaceholder}
-              defaultPickerValue={
-                RangeValue[ValueStatus.Start]
-                  ? moment(RangeValue[ValueStatus.Start])
-                  : undefined
-              }
-            />
-          </LayoutRightCol>
-        </Row>
-      </span>
-    </StyleSheetManager>
+    <span {...(id ? { id: `${id}` } : {})} {...(name ? { name } : {})}>
+      <Row gutter={24}>
+        <LayoutLeftCol span={12}>
+          <SingleDatePicker
+            {...reset}
+            showElement
+            format={startFormat}
+            value={RangeValue[ValueStatus.Start]}
+            valueStatus={ValueStatus.Start}
+            disabledDate={startDateDisabledDate}
+            onChange={startDateChange}
+            placeholder={startPlaceholder}
+            defaultPickerValue={
+              RangeValue[ValueStatus.Start]
+                ? moment(RangeValue[ValueStatus.Start])
+                : undefined
+            }
+          />
+        </LayoutLeftCol>
+        <LayoutRightCol span={12}>
+          <SingleDatePicker
+            {...reset}
+            format={endFormat}
+            value={RangeValue[ValueStatus.End]}
+            valueStatus={ValueStatus.End}
+            disabledDate={endDateDisabledDate}
+            onChange={endDateChange}
+            placeholder={endPlaceholder}
+            defaultPickerValue={
+              RangeValue[ValueStatus.Start]
+                ? moment(RangeValue[ValueStatus.Start])
+                : undefined
+            }
+          />
+        </LayoutRightCol>
+      </Row>
+    </span>
   );
 };
 

@@ -1,6 +1,7 @@
 import React, { useCallback, useMemo } from "react";
 import styled from "styled-components";
 import { chunk } from "lodash";
+import moment, { Moment } from "moment";
 import { fillTen } from "../../utils";
 import PackTag from "./PackTag";
 
@@ -19,6 +20,7 @@ const RowTagWarp = styled.div`
 interface Props {
   onChange: (tag: number) => void;
   rownum: Array<{ value: number; disabled: boolean }>;
+  disabledDate?: Moment;
   value: number;
 }
 

@@ -1,8 +1,8 @@
 import React, { useCallback, useMemo, useRef, useState, useEffect } from 'react';
 import { Tag, InputNumber, Popover, DatePicker, Button, Col, Row } from 'antd';
 import moment from 'moment';
-import styled, { css, StyleSheetManager } from 'styled-components';
 import 'moment/locale/zh-cn';
+import styled, { css } from 'styled-components';
 import { memoize, chunk, get } from 'lodash';
 
 /*! *****************************************************************************
@@ -51,28 +51,27 @@ function __makeTemplateObject(cooked, raw) {
 /**
  * 传入 一个 时间 格式的 字符串 或者 时间戳  转换为momnet
  */
-var transformMoment = function (date) {
+var transformMoment = function (date, format) {
     if (!date) {
         return undefined;
     }
-    var transformDate = moment(date);
+    if (typeof date === "string") {
+        var transformDate_1 = moment(Number(date));
+        if (transformDate_1.isValid()) {
+            return transformDate_1;
+        }
+    }
+    var transformDate = moment(date || null);
     if (date && transformDate.isValid()) {
-        return transformDate;
+        return moment(transformDate.format(format));
     }
     return undefined;
 };
 
-var ValueType;
-(function (ValueType) {
-    ValueType["TimeStamp"] = "timeStamp";
-    ValueType["TimeString"] = "timeString";
-    ValueType["Moment"] = "moment"; // moment对象
-})(ValueType || (ValueType = {}));
 var ValueStatus;
 (function (ValueStatus) {
     ValueStatus["Start"] = "start";
-    ValueStatus["End"] = "end";
-    ValueStatus["None"] = "none"; // 不做取值操作
+    ValueStatus["End"] = "end"; // 结束时间
 })(ValueStatus || (ValueStatus = {}));
 // 选择模式
 var SelectMode;
@@ -94,24 +93,6 @@ var SelectMode;
      */
     SelectMode["BREFORE"] = "brefore";
 })(SelectMode || (SelectMode = {}));
-
-/**
- * 将传入的 moment 对象转换为 时间戳形式
- */
-var transformTimeStamp = function (date, valueStatus) {
-    if (!date) {
-        return undefined;
-    }
-    switch (valueStatus) {
-        case ValueStatus.Start:
-            return date ? date.startOf("day").valueOf() : undefined;
-        case ValueStatus.End:
-            return date ? date.endOf("day").valueOf() : undefined;
-        case ValueStatus.None:
-        default:
-            return date ? date.valueOf() : undefined;
-    }
-};
 
 var pattern = {
     /** 日期 */
@@ -139,14 +120,21 @@ var fillTen = function (number) {
     return "" + number;
 };
 
-var computeTag = function (max, step) {
+// 判断时间是否满足要求
+var disableTime = function (timeValue, timeType, time, disabledDate) {
+    if (disabledDate && time && timeType) {
+        return time.set(timeType, timeValue).isBefore(disabledDate);
+    }
+    return false;
+};
+var computeTag = function (max, step, timeType, time, disabledDate) {
     var array = [];
     var i = 0;
     while (i < max) {
         /* eslint-disable no-loop-func */
         array.push({
             value: i,
-            disabled: false
+            disabled: disableTime(i, timeType, time, disabledDate)
         });
         /* eslint-enable no-loop-func */
         i += step;
@@ -184,7 +172,7 @@ var templateObject_1$1, templateObject_2;
 // @ts-ignore
 var PackInputNumebr = styled(InputNumber)(templateObject_1$2 || (templateObject_1$2 = __makeTemplateObject(["\n  &.ant-input-number {\n    display: inline-block;\n    min-height: 38px;\n    width: 50px;\n    padding: 4px 0px;\n  }\n  & .ant-input-number-input {\n    width: 50px;\n  }\n"], ["\n  &.ant-input-number {\n    display: inline-block;\n    min-height: 38px;\n    width: 50px;\n    padding: 4px 0px;\n  }\n  & .ant-input-number-input {\n    width: 50px;\n  }\n"])));
 var TimeInPut = function (props) {
-    var timeType = props.timeType, value = props.value, format = props.format, max = props.max, step = props.step, onChange = props.onChange, reset = __rest(props, ["timeType", "value", "format", "max", "step", "onChange"]);
+    var timeType = props.timeType, value = props.value, format = props.format, max = props.max, step = props.step, onChange = props.onChange, time = props.time, disabledDate = props.disabledDate, reset = __rest(props, ["timeType", "value", "format", "max", "step", "onChange", "time", "disabledDate"]);
     // input dom
     var inputRef = useRef(null);
     var tagSlectedChange = useCallback(function (tag) {
@@ -213,7 +201,7 @@ var TimeInPut = function (props) {
             inputRef.current.inputNumberRef.input.select();
         }
     }, []);
-    var rownum = useMemo(function () { return computeTag(max, step); }, [max, step]);
+    var rownum = useMemo(function () { return computeTag(max, step, timeType, time, disabledDate); }, [max, step, timeType, time, disabledDate]);
     // 失去焦点
     //  const inputBlur = useCallback(() => {}, []);
     var inputPressEnter = useCallback(function () {
@@ -221,7 +209,7 @@ var TimeInPut = function (props) {
             inputRef.current.blur();
         }
     }, []);
-    return (React.createElement(Popover, { trigger: "click", mouseEnterDelay: 50, mouseLeaveDelay: 0, getPopupContainer: function (triggerNode) { return triggerNode; }, autoAdjustOverflow: true, overlayStyle: { padding: "12px 4px" }, content: React.createElement(PopoverRender, __assign({}, reset, { value: value, rownum: rownum, onChange: tagSlectedChange })) },
+    return (React.createElement(Popover, { trigger: "click", mouseEnterDelay: 50, mouseLeaveDelay: 0, getPopupContainer: function (triggerNode) { return triggerNode; }, autoAdjustOverflow: true, overlayStyle: { padding: "12px 4px" }, content: React.createElement(PopoverRender, __assign({}, reset, { value: value, rownum: rownum, disabledDate: disabledDate, onChange: tagSlectedChange })) },
         React.createElement(PackInputNumebr, { ref: inputRef, value: value, max: max, min: -1, onChange: inputChange, onFocus: inputFocus, 
             //   onBlur={inputBlur}
             onPressEnter: inputPressEnter })));
@@ -249,8 +237,8 @@ var TIMEFORMAT = [
 
 var Warp$1 = styled.div(templateObject_1$3 || (templateObject_1$3 = __makeTemplateObject(["\n  padding: 5px 0;\n"], ["\n  padding: 5px 0;\n"])));
 var TimePicker = function (props) {
-    var format = props.format, value = props.value, onChange = props.onChange, _a = props.hourStep, hourStep = _a === void 0 ? 1 : _a, _b = props.minuteStep, minuteStep = _b === void 0 ? 5 : _b, _c = props.secondStep, secondStep = _c === void 0 ? 10 : _c, disabledHours = props.disabledHours, disabledMinutes = props.disabledMinutes, disabledSeconds = props.disabledSeconds;
-    var _d = useState(moment(value)), time = _d[0], setTime = _d[1];
+    var format = props.format, value = props.value, onChange = props.onChange, _a = props.hourStep, hourStep = _a === void 0 ? 1 : _a, _b = props.minuteStep, minuteStep = _b === void 0 ? 5 : _b, _c = props.secondStep, secondStep = _c === void 0 ? 10 : _c, disabledDate = props.disabledDate;
+    var _d = useState(transformMoment(value, "YYYY-MM-DD " + format)), time = _d[0], setTime = _d[1];
     var timeItemProps = useCallback(function (timeType) {
         var hour = moment(value).hour();
         var minute = moment(value).minute();
@@ -261,7 +249,7 @@ var TimePicker = function (props) {
                     step: secondStep,
                     max: 60,
                     value: second,
-                    //    disabledTime: disabledSeconds,
+                    disabledDate: disabledDate,
                     hour: hour,
                     minute: minute
                 };
@@ -270,7 +258,7 @@ var TimePicker = function (props) {
                     step: minuteStep,
                     max: 60,
                     value: minute,
-                    //    disabledTime: disabledMinutes,
+                    disabledDate: disabledDate,
                     hour: hour,
                     minute: minute
                 };
@@ -281,25 +269,15 @@ var TimePicker = function (props) {
                     step: hourStep,
                     max: 24,
                     value: hour,
-                    //      disabledTime: disabledHours,
+                    disabledDate: disabledDate,
                     hour: hour,
                     minute: minute
                 };
         }
-    }, [
-        format,
-        value,
-        hourStep,
-        minuteStep,
-        secondStep,
-        disabledHours,
-        disabledMinutes,
-        disabledSeconds
-    ]);
+    }, [format, value, hourStep, minuteStep, secondStep, disabledDate]);
     // 时间变化回调
     var timeChange = useCallback(function (value, type) {
         var changeMoment = moment(time).set(type, value);
-        // 注释信息
         if (onChange) {
             onChange(changeMoment);
         }
@@ -337,13 +315,41 @@ var TimePicker = function (props) {
     }, []);
     var timeGroup = useMemo(function () { return format.split(splitSymbol); }, [splitSymbol]);
     useEffect(function () {
-        setTime(transformMoment(value) || moment());
-    }, [value, setTime]);
+        setTime(transformMoment(value, "YYYY-MM-DD " + format));
+    }, [value, setTime, format]);
     return (React.createElement(Warp$1, null, timeGroup.map(function (item) { return (React.createElement("span", { key: item },
-        React.createElement(TimeInPut, __assign({ format: item, timeType: formatBackTimeType(item), onChange: timeChange }, timeItemProps(item))),
+        React.createElement(TimeInPut, __assign({ format: item, time: time, timeType: formatBackTimeType(item), onChange: timeChange }, timeItemProps(item))),
         renderSuffix(item))); })));
 };
 var templateObject_1$3;
+
+// 选择模式
+var SelectMode$1;
+(function (SelectMode) {
+    /**
+     * 今天 及 以后
+     */
+    SelectMode["TODYANDAFTER"] = "todyAndAfter";
+    /**
+     * 以后
+     */
+    SelectMode["AFTER"] = "after";
+    /**
+     * 以前 及 今天
+     */
+    SelectMode["BREFOREANDTODAY"] = "breforeAndToday";
+    /**
+     * 以前
+     */
+    SelectMode["BREFORE"] = "brefore";
+})(SelectMode$1 || (SelectMode$1 = {}));
+
+var ValueType;
+(function (ValueType) {
+    ValueType["TimeStamp"] = "timeStamp";
+    ValueType["TimeString"] = "timeString";
+    ValueType["Moment"] = "moment"; // moment对象
+})(ValueType || (ValueType = {}));
 
 var afterCss = css(templateObject_1$4 || (templateObject_1$4 = __makeTemplateObject(["\n  content: \"~\";\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  position: absolute;\n  right: -24px;\n  top: 0;\n  height: 100%;\n  width: 24px;\n"], ["\n  content: \"~\";\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  position: absolute;\n  right: -24px;\n  top: 0;\n  height: 100%;\n  width: 24px;\n"])));
 // @ts-ignore
@@ -353,12 +359,11 @@ var templateObject_1$4, templateObject_2$1, templateObject_3;
 
 moment.locale("zh-cn");
 var SingleDatePicker = function (props, ref) {
-    var _a;
-    var _b = props.format, format = _b === void 0 ? "YYYY-MM-DD" : _b, _c = props.valueStatus, valueStatus = _c === void 0 ? ValueStatus.None : _c, _d = props.valueType, valueType = _d === void 0 ? ValueType.TimeStamp : _d, value = props.value, defaultPickerValue = props.defaultPickerValue, onChange = props.onChange, disabledDate = props.disabledDate, selectMode = props.selectMode, _e = props.open, open = _e === void 0 ? false : _e, upOnOpenChange = props.onOpenChange, reset = __rest(props, ["format", "valueStatus", "valueType", "value", "defaultPickerValue", "onChange", "disabledDate", "selectMode", "open", "onOpenChange"]);
-    var _f = useState(transformMoment(value)), dateValue = _f[0], setDateValue = _f[1];
-    var _g = useState(defaultPickerValue), defaultValue = _g[0], setDefaultValue = _g[1];
+    var _a = props.format, format = _a === void 0 ? "YYYY-MM-DD" : _a, _b = props.valueType, valueType = _b === void 0 ? ValueType.TimeStamp : _b, value = props.value, defaultPickerValue = props.defaultPickerValue, onChange = props.onChange, disabledDate = props.disabledDate, selectMode = props.selectMode, _c = props.open, open = _c === void 0 ? false : _c, upOnOpenChange = props.onOpenChange, reset = __rest(props, ["format", "valueType", "value", "defaultPickerValue", "onChange", "disabledDate", "selectMode", "open", "onOpenChange"]);
+    var _d = useState(transformMoment(value, format)), dateValue = _d[0], setDateValue = _d[1];
+    var _e = useState(transformMoment(moment(), format)), defaultValue = _e[0], setDefaultValue = _e[1];
     // 面板 open
-    var _h = useState(open), datePanelOpen = _h[0], setDatePanelOpen = _h[1];
+    var _f = useState(open), datePanelOpen = _f[0], setDatePanelOpen = _f[1];
     // 时、分、秒 format
     var timeFormat = useMemo(function () {
         var match = format.match(pattern.TimeFormat);
@@ -368,38 +373,43 @@ var SingleDatePicker = function (props, ref) {
         return undefined;
     }, [format]);
     // 变化回调
-    var dateChange = useCallback(function (date, dateString) {
+    var dateChange = useCallback(function (date) {
         if (onChange) {
             switch (valueType) {
                 case ValueType.TimeStamp:
-                    return onChange(transformTimeStamp(date, timeFormat ? ValueStatus.None : valueStatus), valueStatus);
+                    onChange(date ? moment(date.format(format)).valueOf() : undefined);
+                    break;
                 case ValueType.TimeString:
-                    return onChange(dateString, valueStatus);
+                    onChange(date ? date.format(format) : undefined);
+                    break;
                 case ValueType.Moment:
                 default:
-                    return onChange(date || undefined, valueStatus);
+                    onChange(date ? moment(date.format(format)).valueOf() : undefined);
             }
         }
         else {
-            setDateValue(transformMoment(value));
+            setDateValue(transformMoment(date, format));
         }
-    }, [onChange, valueType, timeFormat, valueStatus]);
+        if (timeFormat) {
+            setDatePanelOpen(true);
+        }
+    }, [onChange, valueType, timeFormat, format]);
     // 不可选择时间回调
     var disabledTime = useCallback(function (currentDate) {
         // 传递外层API 禁用日期
         if (disabledDate && currentDate) {
-            return disabledDate(currentDate, valueStatus);
+            return disabledDate(currentDate);
         }
         if (currentDate) {
             if (selectMode) {
                 switch (selectMode) {
-                    case SelectMode.BREFORE:
+                    case SelectMode$1.BREFORE:
                         return currentDate.isAfter(moment());
-                    case SelectMode.AFTER:
+                    case SelectMode$1.AFTER:
                         return !currentDate.isAfter(moment(), "day");
-                    case SelectMode.BREFOREANDTODAY:
+                    case SelectMode$1.BREFOREANDTODAY:
                         return currentDate.isAfter(moment(), "day");
-                    case SelectMode.TODYANDAFTER:
+                    case SelectMode$1.TODYANDAFTER:
                         return currentDate.isBefore(moment(), "day");
                     default:
                         return false;
@@ -407,7 +417,7 @@ var SingleDatePicker = function (props, ref) {
             }
         }
         return false;
-    }, [disabledDate, selectMode, dateValue, valueStatus]);
+    }, [disabledDate, selectMode, dateValue]);
     // timePicker 变化回调
     var timePickerChange = useCallback(function (timeValue) {
         dateChange(timeValue);
@@ -438,12 +448,9 @@ var SingleDatePicker = function (props, ref) {
         setDatePanelOpen(status);
     }, [upOnOpenChange, setDatePanelOpen, setDefaultValue, dateValue]);
     useEffect(function () {
-        setDateValue(transformMoment(value));
-    }, [value]);
-    return (
-    // @ts-ignore
-    React.createElement(StyleSheetManager, { target: (_a = window.top) === null || _a === void 0 ? void 0 : _a.document.head },
-        React.createElement(PackDataPick, __assign({}, reset, { ref: ref, open: datePanelOpen, format: format, value: dateValue, defaultPickerValue: defaultValue, onChange: dateChange, disabledDate: disabledTime, onOpenChange: onOpenChange, renderExtraFooter: renderExtraFooter }))));
+        setDateValue(transformMoment(value, format));
+    }, [format, value]);
+    return (React.createElement(PackDataPick, __assign({}, reset, { ref: ref, open: datePanelOpen, format: format, value: dateValue, defaultPickerValue: defaultValue, onChange: dateChange, disabledDate: disabledTime, onOpenChange: onOpenChange, renderExtraFooter: renderExtraFooter })));
 };
 var SingleDatePicker$1 = React.forwardRef(SingleDatePicker);
 
@@ -469,9 +476,8 @@ var FormatDefault;
 
 var RangePicker = function (props, ref) {
     var _a;
-    var _b;
-    var id = props.id, name = props.name, format = props.format, onChange = props.onChange, value = props.value, disabledDate = props.disabledDate, selectMode = props.selectMode, placeholder = props.placeholder, _c = props.valueType, valueType = _c === void 0 ? ValueType.TimeStamp : _c, reset = __rest(props, ["id", "name", "format", "onChange", "value", "disabledDate", "selectMode", "placeholder", "valueType"]);
-    var _d = useMemo(function () {
+    var id = props.id, name = props.name, format = props.format, onChange = props.onChange, value = props.value, disabledDate = props.disabledDate, selectMode = props.selectMode, placeholder = props.placeholder, _b = props.valueType, valueType = _b === void 0 ? ValueType.TimeStamp : _b, reset = __rest(props, ["id", "name", "format", "onChange", "value", "disabledDate", "selectMode", "placeholder", "valueType"]);
+    var _c = useMemo(function () {
         if (placeholder && Array.isArray(placeholder)) {
             return [
                 placeholder[0] || Placeholder.START,
@@ -482,8 +488,8 @@ var RangePicker = function (props, ref) {
             return [placeholder || Placeholder.START, placeholder || Placeholder.END];
         }
         return [Placeholder.START, Placeholder.END];
-    }, [placeholder]), startPlaceholder = _d[0], endPlaceholder = _d[1];
-    var _e = useMemo(function () {
+    }, [placeholder]), startPlaceholder = _c[0], endPlaceholder = _c[1];
+    var _d = useMemo(function () {
         if (typeof format === "string") {
             return [format, format];
         }
@@ -491,32 +497,34 @@ var RangePicker = function (props, ref) {
             return format;
         }
         return [FormatDefault.FORMAT_DEFAULT, FormatDefault.FORMAT_DEFAULT];
-    }, [format]), startFormat = _e[0], endFormat = _e[1];
-    var _f = useState((_a = {},
+    }, [format]), startFormat = _d[0], endFormat = _d[1];
+    var _e = useState((_a = {},
         _a[ValueStatus.Start] = undefined,
         _a[ValueStatus.End] = undefined,
-        _a)), RangeValue = _f[0], setRangeValue = _f[1];
+        _a)), RangeValue = _e[0], setRangeValue = _e[1];
     // 时间变化回调
-    var rangeChange = useCallback(function (value, valueStatus) {
+    var rangeChange = useCallback(function (valueStatus, value) {
         var _a, _b, _c;
         if (onChange) {
-            onChange(value ||
-                RangeValue[valueStatus === ValueStatus.Start
-                    ? ValueStatus.End
-                    : ValueStatus.Start]
-                ? __assign(__assign({}, RangeValue), (valueStatus ? (_a = {}, _a[valueStatus] = value, _a) : {})) : undefined);
+            onChange(value || RangeValue[valueStatus]
+                ? __assign(__assign({}, RangeValue), (_a = {}, _a[valueStatus] = value, _a)) : undefined);
         }
         else {
-            setRangeValue(value ||
-                RangeValue[valueStatus === ValueStatus.Start
-                    ? ValueStatus.End
-                    : ValueStatus.Start]
-                ? __assign(__assign({}, RangeValue), (valueStatus ? (_b = {}, _b[valueStatus] = value, _b) : {})) : (_c = {},
+            setRangeValue(value || RangeValue[valueStatus]
+                ? __assign(__assign({}, RangeValue), (_b = {}, _b[valueStatus] = value, _b)) : (_c = {},
                 _c[ValueStatus.Start] = undefined,
                 _c[ValueStatus.End] = undefined,
                 _c));
         }
     }, [onChange, RangeValue]);
+    // 开始时间变化回调
+    var startDateChange = useCallback(function (value) {
+        rangeChange(ValueStatus.Start, value);
+    }, [rangeChange]);
+    // 结束时间变化回调
+    var endDateChange = useCallback(function (value) {
+        rangeChange(ValueStatus.End, value);
+    }, [rangeChange]);
     // 不可选择时间回调
     var rangeDisabledDate = useCallback(function (currentDate, valueStatus) {
         // 上层 不可选择时间段 回调
@@ -531,20 +539,20 @@ var RangePicker = function (props, ref) {
         switch (valueStatus) {
             case ValueStatus.Start:
                 switch (selectMode) {
-                    case SelectMode.BREFORE:
+                    case SelectMode$1.BREFORE:
                         return endTime
                             ? !currentDate.isBefore(moment(), "day") ||
                                 !currentDate.isBefore(endTime, "day")
                             : !currentDate.isBefore(moment(), "day");
-                    case SelectMode.BREFOREANDTODAY:
+                    case SelectMode$1.BREFOREANDTODAY:
                         return currentDate.isAfter(moment()) || endTime
                             ? currentDate.isAfter(endTime)
                             : currentDate.isAfter(moment());
-                    case SelectMode.AFTER:
+                    case SelectMode$1.AFTER:
                         return endTime
                             ? currentDate.isBefore(moment()) || currentDate.isAfter(endTime)
                             : currentDate.isBefore(moment());
-                    case SelectMode.TODYANDAFTER:
+                    case SelectMode$1.TODYANDAFTER:
                         return endTime
                             ? currentDate.isBefore(moment(), "day") ||
                                 currentDate.isAfter(endTime)
@@ -554,22 +562,22 @@ var RangePicker = function (props, ref) {
                 }
             case ValueStatus.End:
                 switch (selectMode) {
-                    case SelectMode.BREFORE:
+                    case SelectMode$1.BREFORE:
                         var brefore = !currentDate.isBefore(moment(), "day");
                         return startTime
                             ? brefore || currentDate.isBefore(startTime)
                             : brefore;
-                    case SelectMode.BREFOREANDTODAY:
+                    case SelectMode$1.BREFOREANDTODAY:
                         var breforeAndToday = !currentDate.isBefore(moment());
                         return startTime
                             ? breforeAndToday || currentDate.isBefore(startTime)
                             : breforeAndToday;
-                    case SelectMode.AFTER:
+                    case SelectMode$1.AFTER:
                         var after = currentDate.isBefore(moment());
                         return startTime
                             ? after || currentDate.isBefore(startTime)
                             : after;
-                    case SelectMode.TODYANDAFTER:
+                    case SelectMode$1.TODYANDAFTER:
                         return startTime
                             ? currentDate.isBefore(startTime)
                             : currentDate.isBefore(moment(), "day");
@@ -582,32 +590,37 @@ var RangePicker = function (props, ref) {
                 return false;
         }
     }, [RangeValue, disabledDate]);
+    // 开始时间变化回调
+    var startDateDisabledDate = useCallback(function (currentDate) {
+        return rangeDisabledDate(currentDate, ValueStatus.Start);
+    }, [rangeDisabledDate]);
+    // 结束时间变化回调
+    var endDateDisabledDate = useCallback(function (currentDate) {
+        return rangeDisabledDate(currentDate, ValueStatus.End);
+    }, [rangeDisabledDate]);
     // 上层porps变化
     useEffect(function () {
         var _a;
         setRangeValue((_a = {},
-            _a[ValueStatus.Start] = get(value, ValueStatus.Start, undefined),
-            _a[ValueStatus.End] = get(value, ValueStatus.End, undefined),
+            _a[ValueStatus.Start] = get(value, ValueStatus.Start),
+            _a[ValueStatus.End] = get(value, ValueStatus.End),
             _a));
     }, [setRangeValue, value]);
-    return (
-    // @ts-ignore
-    React.createElement(StyleSheetManager, { target: (_b = window.top) === null || _b === void 0 ? void 0 : _b.document.head },
-        React.createElement("span", __assign({}, (id ? { id: "" + id } : {}), (name ? { name: name } : {})),
-            React.createElement(Row, { gutter: 24 },
-                React.createElement(LayoutLeftCol, { span: 12 },
-                    React.createElement(SingleDatePicker$1, __assign({}, reset, { showElement: true, format: startFormat, value: RangeValue[ValueStatus.Start], valueStatus: ValueStatus.Start, disabledDate: rangeDisabledDate, onChange: rangeChange, placeholder: startPlaceholder, defaultPickerValue: RangeValue[ValueStatus.Start]
-                            ? moment(RangeValue[ValueStatus.Start])
-                            : undefined }))),
-                React.createElement(LayoutRightCol, { span: 12 },
-                    React.createElement(SingleDatePicker$1, __assign({}, reset, { format: endFormat, value: RangeValue[ValueStatus.End], valueStatus: ValueStatus.End, disabledDate: rangeDisabledDate, onChange: rangeChange, placeholder: endPlaceholder, defaultPickerValue: RangeValue[ValueStatus.Start]
-                            ? moment(RangeValue[ValueStatus.Start])
-                            : undefined })))))));
+    return (React.createElement("span", __assign({}, (id ? { id: "" + id } : {}), (name ? { name: name } : {})),
+        React.createElement(Row, { gutter: 24 },
+            React.createElement(LayoutLeftCol, { span: 12 },
+                React.createElement(SingleDatePicker$1, __assign({}, reset, { showElement: true, format: startFormat, value: RangeValue[ValueStatus.Start], valueStatus: ValueStatus.Start, disabledDate: startDateDisabledDate, onChange: startDateChange, placeholder: startPlaceholder, defaultPickerValue: RangeValue[ValueStatus.Start]
+                        ? moment(RangeValue[ValueStatus.Start])
+                        : undefined }))),
+            React.createElement(LayoutRightCol, { span: 12 },
+                React.createElement(SingleDatePicker$1, __assign({}, reset, { format: endFormat, value: RangeValue[ValueStatus.End], valueStatus: ValueStatus.End, disabledDate: endDateDisabledDate, onChange: endDateChange, placeholder: endPlaceholder, defaultPickerValue: RangeValue[ValueStatus.Start]
+                        ? moment(RangeValue[ValueStatus.Start])
+                        : undefined }))))));
 };
 var RangePicker$1 = React.forwardRef(RangePicker);
 
 moment.locale("zh-cn");
 
 export default SingleDatePicker$1;
-export { RangePicker$1 as RangePicker, SelectMode, ValueStatus, ValueType };
+export { RangePicker$1 as RangePicker, SelectMode$1 as SelectMode, ValueStatus, ValueType };
 //# sourceMappingURL=index.es.js.map

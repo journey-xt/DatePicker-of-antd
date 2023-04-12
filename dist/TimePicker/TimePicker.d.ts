@@ -5,9 +5,7 @@ interface Props {
     minuteStep?: number;
     secondStep?: number;
     value?: string | number | Moment | null;
-    disabledHours?: () => Array<number>;
-    disabledMinutes?: () => Array<number>;
-    disabledSeconds?: () => Array<number>;
+    disabledDate?: Moment;
     onChange?: (date: moment.Moment) => void;
 }
 declare const TimePicker: (props: Props) => JSX.Element;

@@ -5,8 +5,8 @@ Object.defineProperty(exports, '__esModule', { value: true });
 var React = require('react');
 var antd = require('antd');
 var moment = require('moment');
-var styled = require('styled-components');
 require('moment/locale/zh-cn');
+var styled = require('styled-components');
 var lodash = require('lodash');
 
 function _interopDefaultLegacy (e) { return e && typeof e === 'object' && 'default' in e ? e : { 'default': e }; }
@@ -61,27 +61,29 @@ function __makeTemplateObject(cooked, raw) {
 /**
  * 传入 一个 时间 格式的 字符串 或者 时间戳  转换为momnet
  */
-var transformMoment = function (date) {
+var transformMoment = function (date, format) {
     if (!date) {
         return undefined;
     }
-    var transformDate = moment__default['default'](date);
+    if (typeof date === "string") {
+        var transformDate_1 = moment__default['default'](Number(date));
+        if (transformDate_1.isValid()) {
+            return transformDate_1;
+        }
+    }
+    var transformDate = moment__default['default'](date || null);
     if (date && transformDate.isValid()) {
-        return transformDate;
+        return moment__default['default'](transformDate.format(format));
     }
     return undefined;
 };
 
-(function (ValueType) {
-    ValueType["TimeStamp"] = "timeStamp";
-    ValueType["TimeString"] = "timeString";
-    ValueType["Moment"] = "moment"; // moment对象
-})(exports.ValueType || (exports.ValueType = {}));
 (function (ValueStatus) {
     ValueStatus["Start"] = "start";
-    ValueStatus["End"] = "end";
-    ValueStatus["None"] = "none"; // 不做取值操作
+    ValueStatus["End"] = "end"; // 结束时间
 })(exports.ValueStatus || (exports.ValueStatus = {}));
+// 选择模式
+var SelectMode;
 (function (SelectMode) {
     /**
      * 今天 及 以后
@@ -99,25 +101,7 @@ var transformMoment = function (date) {
      * 以前
      */
     SelectMode["BREFORE"] = "brefore";
-})(exports.SelectMode || (exports.SelectMode = {}));
-
-/**
- * 将传入的 moment 对象转换为 时间戳形式
- */
-var transformTimeStamp = function (date, valueStatus) {
-    if (!date) {
-        return undefined;
-    }
-    switch (valueStatus) {
-        case exports.ValueStatus.Start:
-            return date ? date.startOf("day").valueOf() : undefined;
-        case exports.ValueStatus.End:
-            return date ? date.endOf("day").valueOf() : undefined;
-        case exports.ValueStatus.None:
-        default:
-            return date ? date.valueOf() : undefined;
-    }
-};
+})(SelectMode || (SelectMode = {}));
 
 var pattern = {
     /** 日期 */
@@ -145,14 +129,21 @@ var fillTen = function (number) {
     return "" + number;
 };
 
-var computeTag = function (max, step) {
+// 判断时间是否满足要求
+var disableTime = function (timeValue, timeType, time, disabledDate) {
+    if (disabledDate && time && timeType) {
+        return time.set(timeType, timeValue).isBefore(disabledDate);
+    }
+    return false;
+};
+var computeTag = function (max, step, timeType, time, disabledDate) {
     var array = [];
     var i = 0;
     while (i < max) {
         /* eslint-disable no-loop-func */
         array.push({
             value: i,
-            disabled: false
+            disabled: disableTime(i, timeType, time, disabledDate)
         });
         /* eslint-enable no-loop-func */
         i += step;
@@ -190,7 +181,7 @@ var templateObject_1$1, templateObject_2;
 // @ts-ignore
 var PackInputNumebr = styled__default['default'](antd.InputNumber)(templateObject_1$2 || (templateObject_1$2 = __makeTemplateObject(["\n  &.ant-input-number {\n    display: inline-block;\n    min-height: 38px;\n    width: 50px;\n    padding: 4px 0px;\n  }\n  & .ant-input-number-input {\n    width: 50px;\n  }\n"], ["\n  &.ant-input-number {\n    display: inline-block;\n    min-height: 38px;\n    width: 50px;\n    padding: 4px 0px;\n  }\n  & .ant-input-number-input {\n    width: 50px;\n  }\n"])));
 var TimeInPut = function (props) {
-    var timeType = props.timeType, value = props.value, format = props.format, max = props.max, step = props.step, onChange = props.onChange, reset = __rest(props, ["timeType", "value", "format", "max", "step", "onChange"]);
+    var timeType = props.timeType, value = props.value, format = props.format, max = props.max, step = props.step, onChange = props.onChange, time = props.time, disabledDate = props.disabledDate, reset = __rest(props, ["timeType", "value", "format", "max", "step", "onChange", "time", "disabledDate"]);
     // input dom
     var inputRef = React.useRef(null);
     var tagSlectedChange = React.useCallback(function (tag) {
@@ -219,7 +210,7 @@ var TimeInPut = function (props) {
             inputRef.current.inputNumberRef.input.select();
         }
     }, []);
-    var rownum = React.useMemo(function () { return computeTag(max, step); }, [max, step]);
+    var rownum = React.useMemo(function () { return computeTag(max, step, timeType, time, disabledDate); }, [max, step, timeType, time, disabledDate]);
     // 失去焦点
     //  const inputBlur = useCallback(() => {}, []);
     var inputPressEnter = React.useCallback(function () {
@@ -227,7 +218,7 @@ var TimeInPut = function (props) {
             inputRef.current.blur();
         }
     }, []);
-    return (React__default['default'].createElement(antd.Popover, { trigger: "click", mouseEnterDelay: 50, mouseLeaveDelay: 0, getPopupContainer: function (triggerNode) { return triggerNode; }, autoAdjustOverflow: true, overlayStyle: { padding: "12px 4px" }, content: React__default['default'].createElement(PopoverRender, __assign({}, reset, { value: value, rownum: rownum, onChange: tagSlectedChange })) },
+    return (React__default['default'].createElement(antd.Popover, { trigger: "click", mouseEnterDelay: 50, mouseLeaveDelay: 0, getPopupContainer: function (triggerNode) { return triggerNode; }, autoAdjustOverflow: true, overlayStyle: { padding: "12px 4px" }, content: React__default['default'].createElement(PopoverRender, __assign({}, reset, { value: value, rownum: rownum, disabledDate: disabledDate, onChange: tagSlectedChange })) },
         React__default['default'].createElement(PackInputNumebr, { ref: inputRef, value: value, max: max, min: -1, onChange: inputChange, onFocus: inputFocus, 
             //   onBlur={inputBlur}
             onPressEnter: inputPressEnter })));
@@ -255,8 +246,8 @@ var TIMEFORMAT = [
 
 var Warp$1 = styled__default['default'].div(templateObject_1$3 || (templateObject_1$3 = __makeTemplateObject(["\n  padding: 5px 0;\n"], ["\n  padding: 5px 0;\n"])));
 var TimePicker = function (props) {
-    var format = props.format, value = props.value, onChange = props.onChange, _a = props.hourStep, hourStep = _a === void 0 ? 1 : _a, _b = props.minuteStep, minuteStep = _b === void 0 ? 5 : _b, _c = props.secondStep, secondStep = _c === void 0 ? 10 : _c, disabledHours = props.disabledHours, disabledMinutes = props.disabledMinutes, disabledSeconds = props.disabledSeconds;
-    var _d = React.useState(moment__default['default'](value)), time = _d[0], setTime = _d[1];
+    var format = props.format, value = props.value, onChange = props.onChange, _a = props.hourStep, hourStep = _a === void 0 ? 1 : _a, _b = props.minuteStep, minuteStep = _b === void 0 ? 5 : _b, _c = props.secondStep, secondStep = _c === void 0 ? 10 : _c, disabledDate = props.disabledDate;
+    var _d = React.useState(transformMoment(value, "YYYY-MM-DD " + format)), time = _d[0], setTime = _d[1];
     var timeItemProps = React.useCallback(function (timeType) {
         var hour = moment__default['default'](value).hour();
         var minute = moment__default['default'](value).minute();
@@ -267,7 +258,7 @@ var TimePicker = function (props) {
                     step: secondStep,
                     max: 60,
                     value: second,
-                    //    disabledTime: disabledSeconds,
+                    disabledDate: disabledDate,
                     hour: hour,
                     minute: minute
                 };
@@ -276,7 +267,7 @@ var TimePicker = function (props) {
                     step: minuteStep,
                     max: 60,
                     value: minute,
-                    //    disabledTime: disabledMinutes,
+                    disabledDate: disabledDate,
                     hour: hour,
                     minute: minute
                 };
@@ -287,25 +278,15 @@ var TimePicker = function (props) {
                     step: hourStep,
                     max: 24,
                     value: hour,
-                    //      disabledTime: disabledHours,
+                    disabledDate: disabledDate,
                     hour: hour,
                     minute: minute
                 };
         }
-    }, [
-        format,
-        value,
-        hourStep,
-        minuteStep,
-        secondStep,
-        disabledHours,
-        disabledMinutes,
-        disabledSeconds
-    ]);
+    }, [format, value, hourStep, minuteStep, secondStep, disabledDate]);
     // 时间变化回调
     var timeChange = React.useCallback(function (value, type) {
         var changeMoment = moment__default['default'](time).set(type, value);
-        // 注释信息
         if (onChange) {
             onChange(changeMoment);
         }
@@ -343,13 +324,39 @@ var TimePicker = function (props) {
     }, []);
     var timeGroup = React.useMemo(function () { return format.split(splitSymbol); }, [splitSymbol]);
     React.useEffect(function () {
-        setTime(transformMoment(value) || moment__default['default']());
-    }, [value, setTime]);
+        setTime(transformMoment(value, "YYYY-MM-DD " + format));
+    }, [value, setTime, format]);
     return (React__default['default'].createElement(Warp$1, null, timeGroup.map(function (item) { return (React__default['default'].createElement("span", { key: item },
-        React__default['default'].createElement(TimeInPut, __assign({ format: item, timeType: formatBackTimeType(item), onChange: timeChange }, timeItemProps(item))),
+        React__default['default'].createElement(TimeInPut, __assign({ format: item, time: time, timeType: formatBackTimeType(item), onChange: timeChange }, timeItemProps(item))),
         renderSuffix(item))); })));
 };
 var templateObject_1$3;
+
+// 选择模式
+(function (SelectMode) {
+    /**
+     * 今天 及 以后
+     */
+    SelectMode["TODYANDAFTER"] = "todyAndAfter";
+    /**
+     * 以后
+     */
+    SelectMode["AFTER"] = "after";
+    /**
+     * 以前 及 今天
+     */
+    SelectMode["BREFOREANDTODAY"] = "breforeAndToday";
+    /**
+     * 以前
+     */
+    SelectMode["BREFORE"] = "brefore";
+})(exports.SelectMode || (exports.SelectMode = {}));
+
+(function (ValueType) {
+    ValueType["TimeStamp"] = "timeStamp";
+    ValueType["TimeString"] = "timeString";
+    ValueType["Moment"] = "moment"; // moment对象
+})(exports.ValueType || (exports.ValueType = {}));
 
 var afterCss = styled.css(templateObject_1$4 || (templateObject_1$4 = __makeTemplateObject(["\n  content: \"~\";\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  position: absolute;\n  right: -24px;\n  top: 0;\n  height: 100%;\n  width: 24px;\n"], ["\n  content: \"~\";\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  position: absolute;\n  right: -24px;\n  top: 0;\n  height: 100%;\n  width: 24px;\n"])));
 // @ts-ignore
@@ -359,12 +366,11 @@ var templateObject_1$4, templateObject_2$1, templateObject_3;
 
 moment__default['default'].locale("zh-cn");
 var SingleDatePicker = function (props, ref) {
-    var _a;
-    var _b = props.format, format = _b === void 0 ? "YYYY-MM-DD" : _b, _c = props.valueStatus, valueStatus = _c === void 0 ? exports.ValueStatus.None : _c, _d = props.valueType, valueType = _d === void 0 ? exports.ValueType.TimeStamp : _d, value = props.value, defaultPickerValue = props.defaultPickerValue, onChange = props.onChange, disabledDate = props.disabledDate, selectMode = props.selectMode, _e = props.open, open = _e === void 0 ? false : _e, upOnOpenChange = props.onOpenChange, reset = __rest(props, ["format", "valueStatus", "valueType", "value", "defaultPickerValue", "onChange", "disabledDate", "selectMode", "open", "onOpenChange"]);
-    var _f = React.useState(transformMoment(value)), dateValue = _f[0], setDateValue = _f[1];
-    var _g = React.useState(defaultPickerValue), defaultValue = _g[0], setDefaultValue = _g[1];
+    var _a = props.format, format = _a === void 0 ? "YYYY-MM-DD" : _a, _b = props.valueType, valueType = _b === void 0 ? exports.ValueType.TimeStamp : _b, value = props.value, defaultPickerValue = props.defaultPickerValue, onChange = props.onChange, disabledDate = props.disabledDate, selectMode = props.selectMode, _c = props.open, open = _c === void 0 ? false : _c, upOnOpenChange = props.onOpenChange, reset = __rest(props, ["format", "valueType", "value", "defaultPickerValue", "onChange", "disabledDate", "selectMode", "open", "onOpenChange"]);
+    var _d = React.useState(transformMoment(value, format)), dateValue = _d[0], setDateValue = _d[1];
+    var _e = React.useState(transformMoment(moment__default['default'](), format)), defaultValue = _e[0], setDefaultValue = _e[1];
     // 面板 open
-    var _h = React.useState(open), datePanelOpen = _h[0], setDatePanelOpen = _h[1];
+    var _f = React.useState(open), datePanelOpen = _f[0], setDatePanelOpen = _f[1];
     // 时、分、秒 format
     var timeFormat = React.useMemo(function () {
         var match = format.match(pattern.TimeFormat);
@@ -374,27 +380,32 @@ var SingleDatePicker = function (props, ref) {
         return undefined;
     }, [format]);
     // 变化回调
-    var dateChange = React.useCallback(function (date, dateString) {
+    var dateChange = React.useCallback(function (date) {
         if (onChange) {
             switch (valueType) {
                 case exports.ValueType.TimeStamp:
-                    return onChange(transformTimeStamp(date, timeFormat ? exports.ValueStatus.None : valueStatus), valueStatus);
+                    onChange(date ? moment__default['default'](date.format(format)).valueOf() : undefined);
+                    break;
                 case exports.ValueType.TimeString:
-                    return onChange(dateString, valueStatus);
+                    onChange(date ? date.format(format) : undefined);
+                    break;
                 case exports.ValueType.Moment:
                 default:
-                    return onChange(date || undefined, valueStatus);
+                    onChange(date ? moment__default['default'](date.format(format)).valueOf() : undefined);
             }
         }
         else {
-            setDateValue(transformMoment(value));
+            setDateValue(transformMoment(date, format));
         }
-    }, [onChange, valueType, timeFormat, valueStatus]);
+        if (timeFormat) {
+            setDatePanelOpen(true);
+        }
+    }, [onChange, valueType, timeFormat, format]);
     // 不可选择时间回调
     var disabledTime = React.useCallback(function (currentDate) {
         // 传递外层API 禁用日期
         if (disabledDate && currentDate) {
-            return disabledDate(currentDate, valueStatus);
+            return disabledDate(currentDate);
         }
         if (currentDate) {
             if (selectMode) {
@@ -413,7 +424,7 @@ var SingleDatePicker = function (props, ref) {
             }
         }
         return false;
-    }, [disabledDate, selectMode, dateValue, valueStatus]);
+    }, [disabledDate, selectMode, dateValue]);
     // timePicker 变化回调
     var timePickerChange = React.useCallback(function (timeValue) {
         dateChange(timeValue);
@@ -444,12 +455,9 @@ var SingleDatePicker = function (props, ref) {
         setDatePanelOpen(status);
     }, [upOnOpenChange, setDatePanelOpen, setDefaultValue, dateValue]);
     React.useEffect(function () {
-        setDateValue(transformMoment(value));
-    }, [value]);
-    return (
-    // @ts-ignore
-    React__default['default'].createElement(styled.StyleSheetManager, { target: (_a = window.top) === null || _a === void 0 ? void 0 : _a.document.head },
-        React__default['default'].createElement(PackDataPick, __assign({}, reset, { ref: ref, open: datePanelOpen, format: format, value: dateValue, defaultPickerValue: defaultValue, onChange: dateChange, disabledDate: disabledTime, onOpenChange: onOpenChange, renderExtraFooter: renderExtraFooter }))));
+        setDateValue(transformMoment(value, format));
+    }, [format, value]);
+    return (React__default['default'].createElement(PackDataPick, __assign({}, reset, { ref: ref, open: datePanelOpen, format: format, value: dateValue, defaultPickerValue: defaultValue, onChange: dateChange, disabledDate: disabledTime, onOpenChange: onOpenChange, renderExtraFooter: renderExtraFooter })));
 };
 var SingleDatePicker$1 = React__default['default'].forwardRef(SingleDatePicker);
 
@@ -475,9 +483,8 @@ var FormatDefault;
 
 var RangePicker = function (props, ref) {
     var _a;
-    var _b;
-    var id = props.id, name = props.name, format = props.format, onChange = props.onChange, value = props.value, disabledDate = props.disabledDate, selectMode = props.selectMode, placeholder = props.placeholder, _c = props.valueType, valueType = _c === void 0 ? exports.ValueType.TimeStamp : _c, reset = __rest(props, ["id", "name", "format", "onChange", "value", "disabledDate", "selectMode", "placeholder", "valueType"]);
-    var _d = React.useMemo(function () {
+    var id = props.id, name = props.name, format = props.format, onChange = props.onChange, value = props.value, disabledDate = props.disabledDate, selectMode = props.selectMode, placeholder = props.placeholder, _b = props.valueType, valueType = _b === void 0 ? exports.ValueType.TimeStamp : _b, reset = __rest(props, ["id", "name", "format", "onChange", "value", "disabledDate", "selectMode", "placeholder", "valueType"]);
+    var _c = React.useMemo(function () {
         if (placeholder && Array.isArray(placeholder)) {
             return [
                 placeholder[0] || Placeholder.START,
@@ -488,8 +495,8 @@ var RangePicker = function (props, ref) {
             return [placeholder || Placeholder.START, placeholder || Placeholder.END];
         }
         return [Placeholder.START, Placeholder.END];
-    }, [placeholder]), startPlaceholder = _d[0], endPlaceholder = _d[1];
-    var _e = React.useMemo(function () {
+    }, [placeholder]), startPlaceholder = _c[0], endPlaceholder = _c[1];
+    var _d = React.useMemo(function () {
         if (typeof format === "string") {
             return [format, format];
         }
@@ -497,32 +504,34 @@ var RangePicker = function (props, ref) {
             return format;
         }
         return [FormatDefault.FORMAT_DEFAULT, FormatDefault.FORMAT_DEFAULT];
-    }, [format]), startFormat = _e[0], endFormat = _e[1];
-    var _f = React.useState((_a = {},
+    }, [format]), startFormat = _d[0], endFormat = _d[1];
+    var _e = React.useState((_a = {},
         _a[exports.ValueStatus.Start] = undefined,
         _a[exports.ValueStatus.End] = undefined,
-        _a)), RangeValue = _f[0], setRangeValue = _f[1];
+        _a)), RangeValue = _e[0], setRangeValue = _e[1];
     // 时间变化回调
-    var rangeChange = React.useCallback(function (value, valueStatus) {
+    var rangeChange = React.useCallback(function (valueStatus, value) {
         var _a, _b, _c;
         if (onChange) {
-            onChange(value ||
-                RangeValue[valueStatus === exports.ValueStatus.Start
-                    ? exports.ValueStatus.End
-                    : exports.ValueStatus.Start]
-                ? __assign(__assign({}, RangeValue), (valueStatus ? (_a = {}, _a[valueStatus] = value, _a) : {})) : undefined);
+            onChange(value || RangeValue[valueStatus]
+                ? __assign(__assign({}, RangeValue), (_a = {}, _a[valueStatus] = value, _a)) : undefined);
         }
         else {
-            setRangeValue(value ||
-                RangeValue[valueStatus === exports.ValueStatus.Start
-                    ? exports.ValueStatus.End
-                    : exports.ValueStatus.Start]
-                ? __assign(__assign({}, RangeValue), (valueStatus ? (_b = {}, _b[valueStatus] = value, _b) : {})) : (_c = {},
+            setRangeValue(value || RangeValue[valueStatus]
+                ? __assign(__assign({}, RangeValue), (_b = {}, _b[valueStatus] = value, _b)) : (_c = {},
                 _c[exports.ValueStatus.Start] = undefined,
                 _c[exports.ValueStatus.End] = undefined,
                 _c));
         }
     }, [onChange, RangeValue]);
+    // 开始时间变化回调
+    var startDateChange = React.useCallback(function (value) {
+        rangeChange(exports.ValueStatus.Start, value);
+    }, [rangeChange]);
+    // 结束时间变化回调
+    var endDateChange = React.useCallback(function (value) {
+        rangeChange(exports.ValueStatus.End, value);
+    }, [rangeChange]);
     // 不可选择时间回调
     var rangeDisabledDate = React.useCallback(function (currentDate, valueStatus) {
         // 上层 不可选择时间段 回调
@@ -588,27 +597,32 @@ var RangePicker = function (props, ref) {
                 return false;
         }
     }, [RangeValue, disabledDate]);
+    // 开始时间变化回调
+    var startDateDisabledDate = React.useCallback(function (currentDate) {
+        return rangeDisabledDate(currentDate, exports.ValueStatus.Start);
+    }, [rangeDisabledDate]);
+    // 结束时间变化回调
+    var endDateDisabledDate = React.useCallback(function (currentDate) {
+        return rangeDisabledDate(currentDate, exports.ValueStatus.End);
+    }, [rangeDisabledDate]);
     // 上层porps变化
     React.useEffect(function () {
         var _a;
         setRangeValue((_a = {},
-            _a[exports.ValueStatus.Start] = lodash.get(value, exports.ValueStatus.Start, undefined),
-            _a[exports.ValueStatus.End] = lodash.get(value, exports.ValueStatus.End, undefined),
+            _a[exports.ValueStatus.Start] = lodash.get(value, exports.ValueStatus.Start),
+            _a[exports.ValueStatus.End] = lodash.get(value, exports.ValueStatus.End),
             _a));
     }, [setRangeValue, value]);
-    return (
-    // @ts-ignore
-    React__default['default'].createElement(styled.StyleSheetManager, { target: (_b = window.top) === null || _b === void 0 ? void 0 : _b.document.head },
-        React__default['default'].createElement("span", __assign({}, (id ? { id: "" + id } : {}), (name ? { name: name } : {})),
-            React__default['default'].createElement(antd.Row, { gutter: 24 },
-                React__default['default'].createElement(LayoutLeftCol, { span: 12 },
-                    React__default['default'].createElement(SingleDatePicker$1, __assign({}, reset, { showElement: true, format: startFormat, value: RangeValue[exports.ValueStatus.Start], valueStatus: exports.ValueStatus.Start, disabledDate: rangeDisabledDate, onChange: rangeChange, placeholder: startPlaceholder, defaultPickerValue: RangeValue[exports.ValueStatus.Start]
-                            ? moment__default['default'](RangeValue[exports.ValueStatus.Start])
-                            : undefined }))),
-                React__default['default'].createElement(LayoutRightCol, { span: 12 },
-                    React__default['default'].createElement(SingleDatePicker$1, __assign({}, reset, { format: endFormat, value: RangeValue[exports.ValueStatus.End], valueStatus: exports.ValueStatus.End, disabledDate: rangeDisabledDate, onChange: rangeChange, placeholder: endPlaceholder, defaultPickerValue: RangeValue[exports.ValueStatus.Start]
-                            ? moment__default['default'](RangeValue[exports.ValueStatus.Start])
-                            : undefined })))))));
+    return (React__default['default'].createElement("span", __assign({}, (id ? { id: "" + id } : {}), (name ? { name: name } : {})),
+        React__default['default'].createElement(antd.Row, { gutter: 24 },
+            React__default['default'].createElement(LayoutLeftCol, { span: 12 },
+                React__default['default'].createElement(SingleDatePicker$1, __assign({}, reset, { showElement: true, format: startFormat, value: RangeValue[exports.ValueStatus.Start], valueStatus: exports.ValueStatus.Start, disabledDate: startDateDisabledDate, onChange: startDateChange, placeholder: startPlaceholder, defaultPickerValue: RangeValue[exports.ValueStatus.Start]
+                        ? moment__default['default'](RangeValue[exports.ValueStatus.Start])
+                        : undefined }))),
+            React__default['default'].createElement(LayoutRightCol, { span: 12 },
+                React__default['default'].createElement(SingleDatePicker$1, __assign({}, reset, { format: endFormat, value: RangeValue[exports.ValueStatus.End], valueStatus: exports.ValueStatus.End, disabledDate: endDateDisabledDate, onChange: endDateChange, placeholder: endPlaceholder, defaultPickerValue: RangeValue[exports.ValueStatus.Start]
+                        ? moment__default['default'](RangeValue[exports.ValueStatus.Start])
+                        : undefined }))))));
 };
 var RangePicker$1 = React__default['default'].forwardRef(RangePicker);
 

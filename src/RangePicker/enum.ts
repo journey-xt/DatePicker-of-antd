@@ -1,3 +1,8 @@
+export enum ValueStatus {
+  Start = "start", // 开始时间
+  End = "end" // 结束时间
+}
+
 // 选择模式
 export enum SelectMode {
   /**

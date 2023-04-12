@@ -1,6 +1,7 @@
 import { DatePickerProps } from "antd/lib/date-picker/interface.d";
 import { Moment } from "moment/moment";
-import { ValueType, ValueStatus, SelectMode } from "./enum";
+import { ValueType } from "../enum/ValueType.enum";
+import { SelectMode } from "./enum";
 
 export type PickerValue = string | number | Moment;
 
@@ -11,14 +12,10 @@ export interface SingleDatePickerProps
     "format" | "disabledDate" | "value" | "onChange"
   > {
   format?: string;
-  valueStatus?: ValueStatus;
   value?: string | number | Moment;
-  disabledDate?: (
-    currentDate: Moment | undefined,
-    valueStatus?: ValueStatus
-  ) => boolean;
+  disabledDate?: (currentDate: Moment | undefined) => boolean;
   valueType?: ValueType;
-  onChange?: (value?: PickerValue, valueStatus?: ValueStatus) => void;
+  onChange?: (value?: PickerValue) => void;
   showElement?: boolean;
   selectMode?: SelectMode;
 }

@@ -1,16 +1,16 @@
 import React, { useCallback, useState, useEffect, useMemo } from "react";
 import { Button } from "antd";
 import moment from "moment";
-import { StyleSheetManager } from "styled-components";
 import "moment/locale/zh-cn";
 import TimePicker from "../TimePicker";
-import { transformMoment, transformTimeStamp } from "../utils";
+import { transformMoment } from "../utils";
 import { pattern } from "../tools/regex";
 
 // 声明文件
 import { Moment } from "moment/moment";
 import { SingleDatePickerProps } from "./typeing";
-import { ValueType, ValueStatus, SelectMode } from "./enum";
+import { SelectMode } from "./enum";
+import { ValueType } from "../enum/ValueType.enum";
 import { PackDataPick, RenderTimeWarp } from "./styled";
 
 moment.locale("zh-cn");
@@ -21,7 +21,6 @@ const SingleDatePicker = (
 ) => {
   const {
     format = "YYYY-MM-DD",
-    valueStatus = ValueStatus.None,
     valueType = ValueType.TimeStamp,
     value,
     defaultPickerValue,
@@ -33,9 +32,11 @@ const SingleDatePicker = (
     ...reset
   } = props;
 
-  const [dateValue, setDateValue] = useState(transformMoment(value));
+  const [dateValue, setDateValue] = useState(transformMoment(value, format));
 
-  const [defaultValue, setDefaultValue] = useState(defaultPickerValue);
+  const [defaultValue, setDefaultValue] = useState(
+    transformMoment(moment(), format)
+  );
 
   // 面板 open
   const [datePanelOpen, setDatePanelOpen] = useState(open);
@@ -53,28 +54,28 @@ const SingleDatePicker = (
 
   // 变化回调
   const dateChange = useCallback(
-    (date: Moment | null, dateString?: string) => {
+    (date: Moment | null) => {
       if (onChange) {
         switch (valueType) {
           case ValueType.TimeStamp:
-            return onChange(
-              transformTimeStamp(
-                date,
-                timeFormat ? ValueStatus.None : valueStatus
-              ),
-              valueStatus
-            );
+            onChange(date ? moment(date.format(format)).valueOf() : undefined);
+            break;
           case ValueType.TimeString:
-            return onChange(dateString, valueStatus);
+            onChange(date ? date.format(format) : undefined);
+            break;
           case ValueType.Moment:
           default:
-            return onChange(date || undefined, valueStatus);
+            onChange(date ? moment(date.format(format)).valueOf() : undefined);
         }
       } else {
-        setDateValue(transformMoment(value));
+        setDateValue(transformMoment(date, format));
+      }
+
+      if (timeFormat) {
+        setDatePanelOpen(true);
       }
     },
-    [onChange, valueType, timeFormat, valueStatus]
+    [onChange, valueType, timeFormat, format]
   );
 
   // 不可选择时间回调
@@ -82,7 +83,7 @@ const SingleDatePicker = (
     (currentDate: Moment | undefined) => {
       // 传递外层API 禁用日期
       if (disabledDate && currentDate) {
-        return disabledDate(currentDate, valueStatus);
+        return disabledDate(currentDate);
       }
       if (currentDate) {
         if (selectMode) {
@@ -102,7 +103,7 @@ const SingleDatePicker = (
       }
       return false;
     },
-    [disabledDate, selectMode, dateValue, valueStatus]
+    [disabledDate, selectMode, dateValue]
   );
 
   // timePicker 变化回调
@@ -148,31 +149,29 @@ const SingleDatePicker = (
       if (upOnOpenChange) {
         return upOnOpenChange(status);
       }
+
       setDatePanelOpen(status);
     },
     [upOnOpenChange, setDatePanelOpen, setDefaultValue, dateValue]
   );
 
   useEffect(() => {
-    setDateValue(transformMoment(value));
-  }, [value]);
+    setDateValue(transformMoment(value, format));
+  }, [format, value]);
 
   return (
-    // @ts-ignore
-    <StyleSheetManager target={window.top?.document.head}>
-      <PackDataPick
-        {...reset}
-        ref={ref}
-        open={datePanelOpen}
-        format={format}
-        value={dateValue}
-        defaultPickerValue={defaultValue}
-        onChange={dateChange}
-        disabledDate={disabledTime}
-        onOpenChange={onOpenChange}
-        renderExtraFooter={renderExtraFooter}
-      />
-    </StyleSheetManager>
+    <PackDataPick
+      {...reset}
+      ref={ref}
+      open={datePanelOpen}
+      format={format}
+      value={dateValue}
+      defaultPickerValue={defaultValue}
+      onChange={dateChange}
+      disabledDate={disabledTime}
+      onOpenChange={onOpenChange}
+      renderExtraFooter={renderExtraFooter}
+    />
   );
 };
 

@@ -1,3 +1,7 @@
+export declare enum ValueStatus {
+    Start = "start",
+    End = "end"
+}
 export declare enum SelectMode {
     /**
      * 今天 及 以后
