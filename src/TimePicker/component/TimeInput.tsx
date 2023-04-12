@@ -1,7 +1,7 @@
 import React, { useCallback, useRef, useMemo } from "react";
 import styled from "styled-components";
 import { Popover, InputNumber } from "antd";
-import moment, { Moment } from "moment";
+import { Moment } from "moment";
 import { TimeType } from "../enum";
 import PopoverRender from "./PopoverRender";
 import { computeTag } from "../../utils";
@@ -26,7 +26,7 @@ interface Props {
   step: number;
   value: number;
   format: string;
-  disabledDate?: Moment;
+  disabledTime?: (currentData?: Moment) => boolean;
   onChange?: (value: number, type?: TimeType) => void;
 }
 
@@ -39,7 +39,7 @@ const TimeInPut = (props: Props) => {
     step,
     onChange,
     time,
-    disabledDate,
+    disabledTime,
     ...reset
   } = props;
 
@@ -85,10 +85,7 @@ const TimeInPut = (props: Props) => {
     }
   }, []);
 
-  const rownum = useMemo(
-    () => computeTag(max, step, timeType, time, disabledDate),
-    [max, step, timeType, time, disabledDate]
-  );
+  const rownum = useMemo(() => computeTag(max, step), [max, step]);
 
   // 失去焦点
   //  const inputBlur = useCallback(() => {}, []);
@@ -112,7 +109,9 @@ const TimeInPut = (props: Props) => {
           {...reset}
           value={value}
           rownum={rownum}
-          disabledDate={disabledDate}
+          timeType={timeType}
+          time={time}
+          disabledTime={disabledTime}
           onChange={tagSlectedChange}
         />
       }

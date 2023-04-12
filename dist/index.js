@@ -129,22 +129,12 @@ var fillTen = function (number) {
     return "" + number;
 };
 
-// 判断时间是否满足要求
-var disableTime = function (timeValue, timeType, time, disabledDate) {
-    if (disabledDate && time && timeType) {
-        return time.set(timeType, timeValue).isBefore(disabledDate);
-    }
-    return false;
-};
-var computeTag = function (max, step, timeType, time, disabledDate) {
+var computeTag = function (max, step) {
     var array = [];
     var i = 0;
     while (i < max) {
         /* eslint-disable no-loop-func */
-        array.push({
-            value: i,
-            disabled: disableTime(i, timeType, time, disabledDate)
-        });
+        array.push({ value: i, disabled: false });
         /* eslint-enable no-loop-func */
         i += step;
     }
@@ -167,21 +157,30 @@ var templateObject_1;
 var Warp = styled__default['default'].div(templateObject_1$1 || (templateObject_1$1 = __makeTemplateObject(["\n  text-align: left;\n  user-select: none;\n  width: 182px;\n"], ["\n  text-align: left;\n  user-select: none;\n  width: 182px;\n"])));
 var RowTagWarp = styled__default['default'].div(templateObject_2 || (templateObject_2 = __makeTemplateObject(["\n  & .ant-tag:last-child {\n    margin-right: 0;\n  }\n"], ["\n  & .ant-tag:last-child {\n    margin-right: 0;\n  }\n"])));
 var PopoverRender = function (props) {
-    var onChange = props.onChange, rownum = props.rownum, value = props.value;
+    var onChange = props.onChange, rownum = props.rownum, time = props.time, value = props.value, timeType = props.timeType, disabledTime = props.disabledTime;
     var tagChange = React.useCallback(function (tag) {
         if (onChange) {
             onChange(tag);
         }
     }, [onChange]);
+    var disabled = React.useCallback(function (val, timeType) {
+        if (disabledTime) {
+            if (timeType && time) {
+                return disabledTime(time.set(timeType, val));
+            }
+            return disabledTime();
+        }
+        return false;
+    }, []);
     var chunkRownum = React.useMemo(function () { return lodash.chunk(rownum, 5); }, [rownum]);
-    return (React__default['default'].createElement(Warp, null, chunkRownum.map(function (item, index) { return (React__default['default'].createElement(RowTagWarp, { key: index }, item.map(function (tag) { return (React__default['default'].createElement(PackTag, { key: tag.value, tags: tag, disabled: tag.disabled, checked: value === tag.value, onChange: tagChange }, fillTen(tag.value))); }))); })));
+    return (React__default['default'].createElement(Warp, null, chunkRownum.map(function (item, index) { return (React__default['default'].createElement(RowTagWarp, { key: index }, item.map(function (tag) { return (React__default['default'].createElement(PackTag, { key: tag.value, tags: tag, disabled: disabled(tag.value, timeType), checked: value === tag.value, onChange: tagChange }, fillTen(tag.value))); }))); })));
 };
 var templateObject_1$1, templateObject_2;
 
 // @ts-ignore
 var PackInputNumebr = styled__default['default'](antd.InputNumber)(templateObject_1$2 || (templateObject_1$2 = __makeTemplateObject(["\n  &.ant-input-number {\n    display: inline-block;\n    min-height: 38px;\n    width: 50px;\n    padding: 4px 0px;\n  }\n  & .ant-input-number-input {\n    width: 50px;\n  }\n"], ["\n  &.ant-input-number {\n    display: inline-block;\n    min-height: 38px;\n    width: 50px;\n    padding: 4px 0px;\n  }\n  & .ant-input-number-input {\n    width: 50px;\n  }\n"])));
 var TimeInPut = function (props) {
-    var timeType = props.timeType, value = props.value, format = props.format, max = props.max, step = props.step, onChange = props.onChange, time = props.time, disabledDate = props.disabledDate, reset = __rest(props, ["timeType", "value", "format", "max", "step", "onChange", "time", "disabledDate"]);
+    var timeType = props.timeType, value = props.value, format = props.format, max = props.max, step = props.step, onChange = props.onChange, time = props.time, disabledTime = props.disabledTime, reset = __rest(props, ["timeType", "value", "format", "max", "step", "onChange", "time", "disabledTime"]);
     // input dom
     var inputRef = React.useRef(null);
     var tagSlectedChange = React.useCallback(function (tag) {
@@ -210,7 +209,7 @@ var TimeInPut = function (props) {
             inputRef.current.inputNumberRef.input.select();
         }
     }, []);
-    var rownum = React.useMemo(function () { return computeTag(max, step, timeType, time, disabledDate); }, [max, step, timeType, time, disabledDate]);
+    var rownum = React.useMemo(function () { return computeTag(max, step); }, [max, step]);
     // 失去焦点
     //  const inputBlur = useCallback(() => {}, []);
     var inputPressEnter = React.useCallback(function () {
@@ -218,7 +217,7 @@ var TimeInPut = function (props) {
             inputRef.current.blur();
         }
     }, []);
-    return (React__default['default'].createElement(antd.Popover, { trigger: "click", mouseEnterDelay: 50, mouseLeaveDelay: 0, getPopupContainer: function (triggerNode) { return triggerNode; }, autoAdjustOverflow: true, overlayStyle: { padding: "12px 4px" }, content: React__default['default'].createElement(PopoverRender, __assign({}, reset, { value: value, rownum: rownum, disabledDate: disabledDate, onChange: tagSlectedChange })) },
+    return (React__default['default'].createElement(antd.Popover, { trigger: "click", mouseEnterDelay: 50, mouseLeaveDelay: 0, getPopupContainer: function (triggerNode) { return triggerNode; }, autoAdjustOverflow: true, overlayStyle: { padding: "12px 4px" }, content: React__default['default'].createElement(PopoverRender, __assign({}, reset, { value: value, rownum: rownum, timeType: timeType, time: time, disabledTime: disabledTime, onChange: tagSlectedChange })) },
         React__default['default'].createElement(PackInputNumebr, { ref: inputRef, value: value, max: max, min: -1, onChange: inputChange, onFocus: inputFocus, 
             //   onBlur={inputBlur}
             onPressEnter: inputPressEnter })));
@@ -246,7 +245,7 @@ var TIMEFORMAT = [
 
 var Warp$1 = styled__default['default'].div(templateObject_1$3 || (templateObject_1$3 = __makeTemplateObject(["\n  padding: 5px 0;\n"], ["\n  padding: 5px 0;\n"])));
 var TimePicker = function (props) {
-    var format = props.format, value = props.value, onChange = props.onChange, _a = props.hourStep, hourStep = _a === void 0 ? 1 : _a, _b = props.minuteStep, minuteStep = _b === void 0 ? 5 : _b, _c = props.secondStep, secondStep = _c === void 0 ? 10 : _c, disabledDate = props.disabledDate;
+    var format = props.format, value = props.value, onChange = props.onChange, _a = props.hourStep, hourStep = _a === void 0 ? 1 : _a, _b = props.minuteStep, minuteStep = _b === void 0 ? 5 : _b, _c = props.secondStep, secondStep = _c === void 0 ? 10 : _c, disabledTime = props.disabledTime;
     var _d = React.useState(transformMoment(value, "YYYY-MM-DD " + format)), time = _d[0], setTime = _d[1];
     var timeItemProps = React.useCallback(function (timeType) {
         var hour = moment__default['default'](value).hour();
@@ -258,7 +257,7 @@ var TimePicker = function (props) {
                     step: secondStep,
                     max: 60,
                     value: second,
-                    disabledDate: disabledDate,
+                    disabledTime: disabledTime,
                     hour: hour,
                     minute: minute
                 };
@@ -267,7 +266,7 @@ var TimePicker = function (props) {
                     step: minuteStep,
                     max: 60,
                     value: minute,
-                    disabledDate: disabledDate,
+                    disabledTime: disabledTime,
                     hour: hour,
                     minute: minute
                 };
@@ -278,12 +277,12 @@ var TimePicker = function (props) {
                     step: hourStep,
                     max: 24,
                     value: hour,
-                    disabledDate: disabledDate,
+                    disabledTime: disabledTime,
                     hour: hour,
                     minute: minute
                 };
         }
-    }, [format, value, hourStep, minuteStep, secondStep, disabledDate]);
+    }, [format, value, hourStep, minuteStep, secondStep, disabledTime]);
     // 时间变化回调
     var timeChange = React.useCallback(function (value, type) {
         var changeMoment = moment__default['default'](time).set(type, value);
@@ -439,11 +438,18 @@ var SingleDatePicker = function (props, ref) {
     var renderExtraFooter = React.useCallback(function () {
         if (timeFormat) {
             return (React__default['default'].createElement(RenderTimeWarp, null,
-                React__default['default'].createElement(TimePicker, { format: timeFormat, onChange: timePickerChange, value: dateValue || defaultValue }),
+                React__default['default'].createElement(TimePicker, { format: timeFormat, onChange: timePickerChange, value: dateValue || defaultValue, disabledTime: disabledTime }),
                 React__default['default'].createElement(antd.Button, { size: "small", type: "primary", onClick: closePanel }, "\u786E\u5B9A")));
         }
         return null;
-    }, [timeFormat, dateValue, defaultValue, timePickerChange, closePanel]);
+    }, [
+        timeFormat,
+        dateValue,
+        defaultValue,
+        timePickerChange,
+        closePanel,
+        disabledTime
+    ]);
     // 时间组件面板 切换回调
     var onOpenChange = React.useCallback(function (status) {
         if (status && !dateValue) {

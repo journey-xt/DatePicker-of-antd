@@ -130,6 +130,7 @@ const SingleDatePicker = (
             format={timeFormat}
             onChange={timePickerChange}
             value={dateValue || defaultValue}
+            disabledTime={disabledTime}
           />
           <Button size="small" type="primary" onClick={closePanel}>
             确定
@@ -138,7 +139,14 @@ const SingleDatePicker = (
       );
     }
     return null;
-  }, [timeFormat, dateValue, defaultValue, timePickerChange, closePanel]);
+  }, [
+    timeFormat,
+    dateValue,
+    defaultValue,
+    timePickerChange,
+    closePanel,
+    disabledTime
+  ]);
 
   // 时间组件面板 切换回调
   const onOpenChange = useCallback(

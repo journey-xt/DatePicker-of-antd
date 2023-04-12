@@ -16,7 +16,7 @@ interface Props {
   minuteStep?: number;
   secondStep?: number;
   value?: string | number | Moment | null;
-  disabledDate?: Moment;
+  disabledTime?: (currentData?: Moment) => boolean;
   onChange?: (date: moment.Moment) => void;
 }
 
@@ -36,7 +36,7 @@ const TimePicker = (props: Props) => {
     hourStep = 1,
     minuteStep = 5,
     secondStep = 10,
-    disabledDate
+    disabledTime
   } = props;
 
   const [time, setTime] = useState<moment.Moment | undefined>(
@@ -55,7 +55,7 @@ const TimePicker = (props: Props) => {
             step: secondStep,
             max: 60,
             value: second,
-            disabledDate,
+            disabledTime,
             hour,
             minute
           };
@@ -64,7 +64,7 @@ const TimePicker = (props: Props) => {
             step: minuteStep,
             max: 60,
             value: minute,
-            disabledDate,
+            disabledTime,
             hour,
             minute
           };
@@ -75,13 +75,13 @@ const TimePicker = (props: Props) => {
             step: hourStep,
             max: 24,
             value: hour,
-            disabledDate,
+            disabledTime,
             hour,
             minute
           };
       }
     },
-    [format, value, hourStep, minuteStep, secondStep, disabledDate]
+    [format, value, hourStep, minuteStep, secondStep, disabledTime]
   );
 
   // 时间变化回调

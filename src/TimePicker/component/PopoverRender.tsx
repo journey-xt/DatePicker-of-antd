@@ -3,6 +3,7 @@ import styled from "styled-components";
 import { chunk } from "lodash";
 import moment, { Moment } from "moment";
 import { fillTen } from "../../utils";
+import { TimeType } from "../enum";
 import PackTag from "./PackTag";
 
 const Warp = styled.div`
@@ -20,12 +21,14 @@ const RowTagWarp = styled.div`
 interface Props {
   onChange: (tag: number) => void;
   rownum: Array<{ value: number; disabled: boolean }>;
-  disabledDate?: Moment;
   value: number;
+  time?: Moment;
+  timeType?: TimeType;
+  disabledTime?: (currentData?: Moment) => boolean;
 }
 
 const PopoverRender = (props: Props) => {
-  const { onChange, rownum, value } = props;
+  const { onChange, rownum, time, value, timeType, disabledTime } = props;
 
   const tagChange = useCallback(
     (tag: number) => {
@@ -35,6 +38,18 @@ const PopoverRender = (props: Props) => {
     },
     [onChange]
   );
+
+  const disabled = useCallback((val: number, timeType?: TimeType) => {
+    if (disabledTime) {
+      if (timeType && time) {
+        return disabledTime(time.set(timeType, val));
+      }
+
+      return disabledTime();
+    }
+
+    return false;
+  }, []);
 
   const chunkRownum = useMemo(() => chunk(rownum, 5), [rownum]);
 
@@ -46,7 +61,7 @@ const PopoverRender = (props: Props) => {
             <PackTag
               key={tag.value}
               tags={tag}
-              disabled={tag.disabled}
+              disabled={disabled(tag.value, timeType)}
               checked={value === tag.value}
               onChange={tagChange}
             >

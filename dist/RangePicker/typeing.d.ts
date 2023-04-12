@@ -1,5 +1,5 @@
 import { Moment } from "moment/moment";
-import { ValueStatus } from "../SingleDatePicker/enum";
+import { ValueStatus } from "./enum";
 import { PickerValue, SingleDatePickerProps } from "../SingleDatePicker/typeing";
 export interface RangePickerValue {
     [ValueStatus.Start]: PickerValue | undefined;
