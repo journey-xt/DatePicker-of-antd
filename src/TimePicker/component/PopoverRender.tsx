@@ -24,7 +24,7 @@ interface Props {
   value: number;
   time?: Moment;
   timeType?: TimeType;
-  disabledTime?: (currentData?: Moment) => boolean;
+  disabledTime?: (currentData?: Moment, timeType?: TimeType) => boolean;
 }
 
 const PopoverRender = (props: Props) => {
@@ -42,7 +42,7 @@ const PopoverRender = (props: Props) => {
   const disabled = useCallback((val: number, timeType?: TimeType) => {
     if (disabledTime) {
       if (timeType && time) {
-        return disabledTime(time.set(timeType, val));
+        return disabledTime(time.set(timeType, val), timeType);
       }
 
       return disabledTime();

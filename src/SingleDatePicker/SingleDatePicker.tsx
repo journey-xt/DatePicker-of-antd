@@ -29,6 +29,7 @@ const SingleDatePicker = (
     selectMode,
     open = false,
     onOpenChange: upOnOpenChange,
+    disabledTime,
     ...reset
   } = props;
 
@@ -79,7 +80,7 @@ const SingleDatePicker = (
   );
 
   // 不可选择时间回调
-  const disabledTime = useCallback(
+  const disabledDateMethod = useCallback(
     (currentDate: Moment | undefined) => {
       // 传递外层API 禁用日期
       if (disabledDate && currentDate) {
@@ -176,7 +177,7 @@ const SingleDatePicker = (
       value={dateValue}
       defaultPickerValue={defaultValue}
       onChange={dateChange}
-      disabledDate={disabledTime}
+      disabledDate={disabledDateMethod}
       onOpenChange={onOpenChange}
       renderExtraFooter={renderExtraFooter}
     />

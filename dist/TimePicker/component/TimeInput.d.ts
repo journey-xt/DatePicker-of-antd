@@ -7,7 +7,7 @@ interface Props {
     step: number;
     value: number;
     format: string;
-    disabledTime?: (currentData?: Moment) => boolean;
+    disabledTime?: (currentData?: Moment, timeType?: TimeType) => boolean;
     onChange?: (value: number, type?: TimeType) => void;
 }
 declare const TimeInPut: (props: Props) => JSX.Element;

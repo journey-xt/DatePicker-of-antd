@@ -9,7 +9,7 @@ interface Props {
     value: number;
     time?: Moment;
     timeType?: TimeType;
-    disabledTime?: (currentData?: Moment) => boolean;
+    disabledTime?: (currentData?: Moment, timeType?: TimeType) => boolean;
 }
 declare const PopoverRender: (props: Props) => JSX.Element;
 export default PopoverRender;
