@@ -5,7 +5,7 @@ import 'moment/locale/zh-cn';
 import styled, { css } from 'styled-components';
 import { memoize, chunk, get } from 'lodash';
 
-/*! *****************************************************************************
+/******************************************************************************
 Copyright (c) Microsoft Corporation.
 
 Permission to use, copy, modify, and/or distribute this software for any
@@ -21,32 +21,36 @@ PERFORMANCE OF THIS SOFTWARE.
 ***************************************************************************** */
 
 var __assign = function() {
-    __assign = Object.assign || function __assign(t) {
-        for (var s, i = 1, n = arguments.length; i < n; i++) {
-            s = arguments[i];
-            for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p)) t[p] = s[p];
-        }
-        return t;
-    };
-    return __assign.apply(this, arguments);
+  __assign = Object.assign || function __assign(t) {
+      for (var s, i = 1, n = arguments.length; i < n; i++) {
+          s = arguments[i];
+          for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p)) t[p] = s[p];
+      }
+      return t;
+  };
+  return __assign.apply(this, arguments);
 };
 
 function __rest(s, e) {
-    var t = {};
-    for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p) && e.indexOf(p) < 0)
-        t[p] = s[p];
-    if (s != null && typeof Object.getOwnPropertySymbols === "function")
-        for (var i = 0, p = Object.getOwnPropertySymbols(s); i < p.length; i++) {
-            if (e.indexOf(p[i]) < 0 && Object.prototype.propertyIsEnumerable.call(s, p[i]))
-                t[p[i]] = s[p[i]];
-        }
-    return t;
+  var t = {};
+  for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p) && e.indexOf(p) < 0)
+      t[p] = s[p];
+  if (s != null && typeof Object.getOwnPropertySymbols === "function")
+      for (var i = 0, p = Object.getOwnPropertySymbols(s); i < p.length; i++) {
+          if (e.indexOf(p[i]) < 0 && Object.prototype.propertyIsEnumerable.call(s, p[i]))
+              t[p[i]] = s[p[i]];
+      }
+  return t;
 }
 
 function __makeTemplateObject(cooked, raw) {
-    if (Object.defineProperty) { Object.defineProperty(cooked, "raw", { value: raw }); } else { cooked.raw = raw; }
-    return cooked;
+  if (Object.defineProperty) { Object.defineProperty(cooked, "raw", { value: raw }); } else { cooked.raw = raw; }
+  return cooked;
 }
+var _SuppressedError = typeof SuppressedError === "function" ? SuppressedError : function (error, suppressed, message) {
+  var e = new Error(message);
+  return e.name = "SuppressedError", e.error = error, e.suppressed = suppressed, e;
+};
 
 /**
  * 传入 一个 时间 格式的 字符串 或者 时间戳  转换为momnet
@@ -238,6 +242,8 @@ var Warp$1 = styled.div(templateObject_1$3 || (templateObject_1$3 = __makeTempla
 var TimePicker = function (props) {
     var format = props.format, value = props.value, onChange = props.onChange, _a = props.hourStep, hourStep = _a === void 0 ? 1 : _a, _b = props.minuteStep, minuteStep = _b === void 0 ? 5 : _b, _c = props.secondStep, secondStep = _c === void 0 ? 10 : _c, disabledTime = props.disabledTime;
     var _d = useState(transformMoment(value, "YYYY-MM-DD " + format)), time = _d[0], setTime = _d[1];
+    var timeRef = useRef(time);
+    timeRef.current = time;
     var timeItemProps = useCallback(function (timeType) {
         var hour = moment(value).hour();
         var minute = moment(value).minute();
@@ -274,16 +280,17 @@ var TimePicker = function (props) {
                 };
         }
     }, [format, value, hourStep, minuteStep, secondStep, disabledTime]);
-    // 时间变化回调
+    // 时间变化回调：基准从 ref 实时读取，避免 Popover 旧闭包覆盖上一次选择
     var timeChange = useCallback(function (value, type) {
-        var changeMoment = moment(time).set(type, value);
+        if (!type) {
+            return;
+        }
+        var changeMoment = moment(timeRef.current).set(type, value);
+        setTime(changeMoment);
         if (onChange) {
             onChange(changeMoment);
         }
-        else {
-            setTime(changeMoment);
-        }
-    }, [time, onChange, setTime]);
+    }, [onChange, setTime]);
     // 返回分隔符号
     var splitSymbol = useMemo(function () {
         var match = matchTimeFormat(format);
@@ -312,7 +319,11 @@ var TimePicker = function (props) {
         }
         return undefined;
     }, []);
-    var timeGroup = useMemo(function () { return format.split(splitSymbol); }, [splitSymbol]);
+    var timeGroup = useMemo(function () {
+        var match = matchTimeFormat(format);
+        var timePart = match && Array.isArray(match) && match[0];
+        return (timePart || format).split(splitSymbol);
+    }, [format, splitSymbol]);
     useEffect(function () {
         setTime(transformMoment(value, "YYYY-MM-DD " + format));
     }, [value, setTime, format]);
@@ -419,6 +430,7 @@ var SingleDatePicker = function (props, ref) {
     }, [disabledDate, selectMode, dateValue]);
     // timePicker 变化回调
     var timePickerChange = useCallback(function (timeValue) {
+        console.log(timeValue.format("HH:mm"));
         dateChange(timeValue);
     }, [dateChange]);
     // 关闭 datepanel

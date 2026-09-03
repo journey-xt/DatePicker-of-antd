@@ -34,7 +34,10 @@ const DatePickerDemo = props => {
           <Col span={6}>
             <Form.Item label="单个时间(选择以后)">
               {getFieldDecorator("singleDate2")(
-                <SingleDatePicker selectMode={SelectMode.AFTER} />
+                <SingleDatePicker
+                  selectMode={SelectMode.TODYANDAFTER}
+                  format="YYYY-MM-DD HH:mm"
+                />
               )}
             </Form.Item>
             {JSON.stringify(getFieldValue("singleDate2"))}

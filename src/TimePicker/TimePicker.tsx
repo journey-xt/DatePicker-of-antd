@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import styled from "styled-components";
 import moment, { Moment } from "moment";
 import TimeInput from "./component/TimeInput";
@@ -43,6 +43,9 @@ const TimePicker = (props: Props) => {
     transformMoment(value, `YYYY-MM-DD ${format}`)
   );
 
+  const timeRef = useRef(time);
+  timeRef.current = time;
+
   const timeItemProps: (timeType: string) => Step = useCallback(
     (timeType: string) => {
       const hour = moment(value).hour();
@@ -84,17 +87,19 @@ const TimePicker = (props: Props) => {
     [format, value, hourStep, minuteStep, secondStep, disabledTime]
   );
 
-  // 时间变化回调
+  // 时间变化回调：基准从 ref 实时读取，避免 Popover 旧闭包覆盖上一次选择
   const timeChange = useCallback(
-    (value: number, type: TimeType) => {
-      const changeMoment = moment(time).set(type, value);
+    (value: number, type?: TimeType) => {
+      if (!type) {
+        return;
+      }
+      const changeMoment = moment(timeRef.current).set(type, value);
+      setTime(changeMoment);
       if (onChange) {
         onChange(changeMoment);
-      } else {
-        setTime(changeMoment);
       }
     },
-    [time, onChange, setTime]
+    [onChange, setTime]
   );
 
   // 返回分隔符号
@@ -129,7 +134,11 @@ const TimePicker = (props: Props) => {
     return undefined;
   }, []);
 
-  const timeGroup = useMemo(() => format.split(splitSymbol), [splitSymbol]);
+  const timeGroup = useMemo(() => {
+    const match = matchTimeFormat(format);
+    const timePart = match && Array.isArray(match) && match[0];
+    return (timePart || format).split(splitSymbol);
+  }, [format, splitSymbol]);
 
   useEffect(() => {
     setTime(transformMoment(value, `YYYY-MM-DD ${format}`));
