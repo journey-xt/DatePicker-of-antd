@@ -110,8 +110,6 @@ const SingleDatePicker = (
   // timePicker 变化回调
   const timePickerChange = useCallback(
     (timeValue: moment.Moment) => {
-      console.log(timeValue.format("HH:mm"));
-
       dateChange(timeValue);
     },
     [dateChange]
